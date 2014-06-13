@@ -1,6 +1,7 @@
 package by.org.cgm.quakeviewer;
 
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
@@ -14,21 +15,34 @@ import com.mapswithme.maps.api.MapsWithMeApi;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
+import by.org.cgm.jdbf.JdbfTask;
 import by.org.cgm.quakeviewer.quake.QuakeContent;
 import by.org.cgm.quakeviewer.quake.QuakeContent.QuakeItem;
 
 public class QuakeListActivity extends ListActivity {
 
     QuakeAdapter mQuakeAdapter;
+    public static ProgressDialog progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quake_list);
 
+        progress = ProgressDialog.show(this, "Загрузка", "Загружаются данные", true, false);
+        JdbfTask task = new JdbfTask();
+        task.execute("http://www.brazer.url.ph/data.dbf");
+        try {
+            task.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
 
-
+        QuakeContent.init();
         mQuakeAdapter = new QuakeAdapter(this, QuakeContent.ITEMS);
         setListAdapter(mQuakeAdapter);
 
@@ -38,7 +52,6 @@ public class QuakeListActivity extends ListActivity {
                 showQuakes(QuakeContent.ITEMS);
             }
         });
-
     }
 
     @Override
@@ -74,7 +87,7 @@ public class QuakeListActivity extends ListActivity {
             final View view = super.getView(position, convertView, parent);
             final TextView subText = (TextView) view.findViewById(android.R.id.text2);
             final QuakeItem quake = data.get(position);
-            subText.setText(quake.name);
+            subText.setText(quake.content);
             return view;
         }
     }
