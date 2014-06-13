@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pre-dex-items>
+
+    <item
+        dex="D:\Projects\MobileProjects\QuakeViewer\viewer\build\intermediates\pre-dexed\debug\classes-187fa8011e7ac52305ece72611eef817d84e8142.jar"
+        jar="D:\Projects\MobileProjects\QuakeViewer\build\intermediates\exploded-aar\com.android.support\appcompat-v7\19.1.0\classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="3499ceba05ca1f6037c6a2fad73df8f636224a28"/>
+    <item
+        dex="D:\Projects\MobileProjects\QuakeViewer\viewer\build\intermediates\pre-dexed\debug\support-v4-19.1.0-e311e493b238b75da4095bd5ee7b69d76d73dc42.jar"
+        jar="C:\Program Files (x86)\Android\android-studio\sdk\extras\android\m2repository\com\android\support\support-v4\19.1.0\support-v4-19.1.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67"/>
+    <item
+        dex="D:\Projects\MobileProjects\QuakeViewer\viewer\build\intermediates\pre-dexed\debug\classes-4bca0ccfa3bd69a8affdf8d2ef8b4ab15db05249.jar"
+        jar="D:\Projects\MobileProjects\QuakeViewer\build\intermediates\exploded-aar\QuakeViewer\lib\unspecified\classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="a968b767fe0ba905b25d2e2e516764e4661e94cf"/>
+
+</pre-dex-items>

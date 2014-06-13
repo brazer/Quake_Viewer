@@ -1,0 +1,1 @@
+This is an Android application for viewing of quakes from dbf-files with special format.
