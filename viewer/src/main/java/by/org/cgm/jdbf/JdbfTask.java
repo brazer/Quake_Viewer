@@ -6,40 +6,64 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class JdbfTask extends AsyncTask<String, Void, DBFReader>
+import by.org.cgm.quakeviewer.QuakeListActivity;
+
+public class JdbfTask extends AsyncTask<String, Integer, Integer>
 {
 
     public static ArrayList<QuakeRecord> records;
     private static DBFReader reader;
 
     @Override
-    protected DBFReader doInBackground(String... params) {
+    protected Integer doInBackground(String... params) {
+        initReader(params[0]);
         try {
-            URL url = new URL("http://www.brazer.url.ph/data.dbf");
+            formRecords();
+        } catch (JDBFException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return records.size();
+    }
+
+    private void initReader(String strUrl) {
+        try {
+            URL url = new URL(strUrl);
             reader = new DBFReader(url.openStream());
         }
         catch (Exception e) {
             e.printStackTrace();
             reader = readFromFile();
         }
-        try {
-            onPostExecute();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return reader;
     }
 
     private DBFReader readFromFile() {
         try {
-            return new DBFReader("/mnt/sdcard/data/data.dbf");
+            return new DBFReader("/mnt/sdcard/Download/data.dbf");
         } catch (JDBFException e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    private void onPostExecute() throws JDBFException, UnsupportedEncodingException {
+    /**
+     * <p>Runs on the UI thread after {@link #doInBackground}. The
+     * specified result is the value returned by {@link #doInBackground}.</p>
+     * <p/>
+     * <p>This method won't be invoked if the task was cancelled.</p>
+     *
+     * @param result The result of the operation computed by {@link #doInBackground}.
+     * @see #onPreExecute
+     * @see #doInBackground
+     * @see #onCancelled(Object)
+     */
+    @Override
+    protected void onPostExecute(Integer result) {
+        QuakeListActivity.progress.dismiss();
+    }
+
+    private void formRecords() throws JDBFException, UnsupportedEncodingException {
         if (reader==null) return;
         int i;
         records = new ArrayList<QuakeRecord>();
@@ -47,6 +71,16 @@ public class JdbfTask extends AsyncTask<String, Void, DBFReader>
             System.out.print(reader.getField(i).getName()+" ");
         }
         System.out.println();
+        readDataAndAddRecords();
+        for (i = 0; i < records.size()/2; i++)
+        {
+            QuakeRecord temp = records.get(i);
+            records.set(i, records.get(records.size() - i - 1));
+            records.set(records.size() - i - 1, temp);
+        }
+    }
+
+    private void readDataAndAddRecords() throws JDBFException {
         while (reader.hasNextRecord()) {
             String strings[] = reader.nextRecordStrings();
             QuakeRecord rec = new QuakeRecord();
@@ -56,12 +90,8 @@ public class JdbfTask extends AsyncTask<String, Void, DBFReader>
             }
             records.add(rec);
             System.out.println();
-        }
-        for (i = 0; i < records.size()/2; i++)
-        {
-            QuakeRecord temp = records.get(i);
-            records.set(i, records.get(records.size() - i - 1));
-            records.set(records.size() - i - 1, temp);
+            publishProgress(records.size());
+            if (isCancelled()) break;
         }
     }
 
