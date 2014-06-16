@@ -1,0 +1,1328 @@
+
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta content='width=1024' name='viewport'>
+    
+    
+    <title>Простое использование AsyncTask и ProgressDialog в Android / Хабрахабр</title>
+    
+    <meta name='yandex-verification' content='67d46b975fa41645' /> <!-- яндекс вебмастер - верификация -->
+
+    <meta name="description" content="
+
+Практика создания приложений, отзывчивых к действиям пользователя, предполагает, что все тяжелые операции должны исполняться в отдельном потоке, сообщая тем или иным образом пользователю о..." />    
+    <meta name="keywords" content="android, asynctask, progressdialog" />
+    
+    	<meta property="fb:app_id"      content="444736788986613" /> 
+<meta property="og:type"        content="article" /> 
+<meta property="og:url"         content="http://habrahabr.ru/post/114570/" /> 
+<meta property="og:title"       content="Простое использование AsyncTask и ProgressDialog в Android" /> 
+	<meta property="og:image"       content="http://developer.android.com/images/dialog_progress_spinning.png" />
+	<link rel="image_src" href="http://developer.android.com/images/dialog_progress_spinning.png" />
+	
+<meta property="og:description" content="Практика создания приложений, отзывчивых к действиям пользователя, предполагает, что все тяжелые операции должны исполняться в отдельном потоке, сообщая тем..." />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@habrahabr" />
+	<meta property="al:ios:url" content="habrahabr://post/114570" />
+<meta property="al:ios:app_store_id" content="778613673" />
+<meta property="al:ios:app_name" content="Habrahabr" />
+<meta property="al:android:url" content="habrahabr://post/114570" />
+<meta property="al:android:app_name" content="Habrahabr" />
+<meta property="al:android:package" content="ru.habrahabr" />
+<meta property="al:windows_phone:url" content="habrahabr://post/114570" />
+<meta property="al:windows_phone:app_name" content="Habrahabr" />
+<meta property="al:windows_phone:app_id" content="460a6bd6-8955-470f-935e-9ea1726a6060" />
+
+
+      <link href="/styles/1402500954/all.css" rel="stylesheet" media="all" />
+  
+    <link href="/styles/1402500954/_parts/navbar.css" rel="stylesheet" media="all" />
+
+      <link href="/styles/1402500954/_parts/posts.css" rel="stylesheet" media="all" />
+  <link href="/styles/1402500954/_parts/comments.css" rel="stylesheet" media="all" />
+  <link href="/styles/1402500954/forms.css" rel="stylesheet" media="all" />
+  <link href="/styles/1402500954/highlight.css" rel="stylesheet" media="all" />
+
+
+    <link href="/styles/1402500954/printer.css" rel="stylesheet" media="print" />
+
+    
+    
+
+      <script src="/javascripts/1402500954/all.js"></script>
+    <script src="/javascripts/1402500954/_parts/_navbar.js"></script>
+
+
+      <script type="text/javascript" src="/javascripts/1402500954/libs/jquery.form.js"></script>
+  <script type="text/javascript" src="/javascripts/1402500954/libs/jquery.cookie.js"></script>
+  <script type="text/javascript" src="/javascripts/1402500954/libs/wysiwyg.js"></script>
+  <script type="text/javascript" src="/javascripts/1402500954/libs/highlight.js"></script>
+  <script type="text/javascript" src="/javascripts/1402500954/libs/jquery-ui-highlight.js"></script>
+  <script type="text/javascript" src="/javascripts/1402500954/_parts/posts.js"></script>
+  <script type="text/javascript" src="/javascripts/1402500954/_parts/comments.js"></script>
+  <script type="text/javascript" src="/javascripts/1402500954/posts/all.js"></script>
+
+
+      <!-- www.criteo.com/ru -->
+<script type='text/javascript'>
+  var crtg_nid="2580";
+  var crtg_cookiename="cto_rtt";
+  var crtg_varname="crtg_content";
+  function crtg_getCookie(c_name){
+    var i,x,y,ARRCookies=document.cookie.split(";");
+    for(i=0;i<ARRCookies.length;i++){
+      x=ARRCookies[i].substr(0,ARRCookies[i].indexOf("="));
+      y=ARRCookies[i].substr(ARRCookies[i].indexOf("=")+1);
+      x=x.replace(/^\s+|\s+$/g,"");
+      if(x==c_name){return unescape(y);}
+    }
+    return'';
+  }
+  var crtg_content = crtg_getCookie(crtg_cookiename);var crtg_rnd=Math.floor(Math.random()*99999999999);
+  var crtg_url=location.protocol+'//rtax.criteo.com/delivery/rta/rta.js?netId='+escape(crtg_nid);crtg_url+='&cookieName='+escape(crtg_cookiename);crtg_url+='&rnd='+crtg_rnd;crtg_url+='&varName=' + escape(crtg_varname);
+  var crtg_script=document.createElement('script');crtg_script.type='text/javascript';crtg_script.src=crtg_url;crtg_script.async=true;
+  if(document.getElementsByTagName("head").length>0)document.getElementsByTagName("head")[0].appendChild(crtg_script);
+  else
+  if(document.getElementsByTagName("body").length>0)document.getElementsByTagName("body")[0].appendChild(crtg_script);
+</script>
+      <script >
+        var N = 5;
+        var ar_duo1 = Math.floor(Math.random()*N+1);
+      </script>
+      <script type="text/javascript" src="/javascripts/1402500954/adriver.core.2.js"></script>
+
+    <link title="Хабрахабр / Комментарии к публикации «Простое использование AsyncTask и ProgressDialog в Android»" type="application/rss+xml" rel="alternate" href="http://habrahabr.ru/rss/post/114570/"/>
+        
+    
+    
+<script type="text/javascript">
+
+    var user_type = "guest";
+    var username = 'guest';
+
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+    ga('create', 'UA-726094-1',  'auto' ); 
+
+  ga('require', 'displayfeatures');
+  ga('set', 'dimension1', user_type); // user type - guest/readonly/habrauser
+  ga('set', 'dimension2', username); // username
+
+
+  ga('send', 'pageview');
+  
+</script>
+
+
+
+<script type="text/javascript">
+var pp_gemius_identifier = new String('p8zr4.NqiIZJgD2cnP2s5fWWnIQFHrAvZ280B955gIr.f7');
+</script>
+<script src="/javascripts/1402500954/gemius.js"></script>
+
+
+
+
+
+
+
+    
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+(function (d, w, c) {
+    (w[c] = w[c] || []).push(function() {
+        try {
+            w.yaCounter24049213 = new Ya.Metrika({id:24049213,
+                    webvisor:true,
+                    clickmap:true,
+                    trackLinks:true,
+                    accurateTrackBounce:true});
+        } catch(e) { }
+    });
+
+    var n = d.getElementsByTagName("script")[0],
+        s = d.createElement("script"),
+        f = function () { n.parentNode.insertBefore(s, n); };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";
+
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else { f(); }
+})(document, window, "yandex_metrika_callbacks");
+</script>
+<noscript><div><img src="//mc.yandex.ru/watch/24049213" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+  </head>
+
+  <body>
+    
+    <div id="layout">
+      <div id="navbar_overlay" class="hidden"></div>
+<div id="navbar">
+  <div class="nav_panel">
+    <a href="http://habrahabr.ru/" class="logo"></a>
+      <a href="/posts/" class="tab tab_menu" data-tab="menu_tab" title="Меню"></a>
+      <a href="https://habrahabr.ru/auth/login/" class="tab tab_login" id="login" title="Войти"></a>
+    
+    <a href="#" class="scroll_to_up hidden scroll_to_up_for_guest" id="scroll_to_top" title="Наверх"></a>
+  </div>
+  <div class="nav_tabs_content ">
+    
+    <div class="nav_tab hidden" id="menu_tab">
+      <div class="title">Разделы</div>
+      <form action="/search/" method="get" class="global_search_form">
+        <div>
+          <input type="text" name="q" placeholder="Поиск" />
+        </div>
+      </form>
+      <div class="menu">
+        <a href="/posts/top/">Посты</a>
+        <a href="/hubs/">Хабы</a>
+        <a href="/companies/">Компании</a>
+        <a href="/users/">Пользователи</a>
+        <a href="http://toster.ru/?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo"  class="new_window">Q&A</a>
+        <a href="/sandbox/">Песочница</a>
+        
+
+      </div>
+
+      
+
+            <div class="line"></div>
+            <div class="title">Спецпроекты</div>
+            <div class="menu">
+
+            <a href="/lnk/9/">Yota Devices</a>
+
+            <a href="/lnk/7/">М.Видео</a>
+
+            <a href="/lnk/11/">Payler</a>
+            </div>
+
+        
+    </div>
+
+    
+  </div>
+</div>
+      <div class="inner">
+        
+                
+        
+
+        	
+  <div class="content_left">
+  	
+
+
+
+
+
+    <div class="post_show">
+  	  
+  <div class="post shortcuts_item" id="post_114570">
+  	<div class="published">27 февраля 2011 в 16:34</div>  
+    <h1 class="title">
+    
+      
+      
+
+      
+        <span class="post_title">Простое использование AsyncTask и ProgressDialog в Android</span>
+			
+  		<a href="/sandbox/" class="flag flag_sandbox" title="Перейти в песочницу">из песочницы</a>
+			
+			
+
+  	</h1>
+  	
+  	<div class="hubs">
+		<a href="http://habrahabr.ru/hub/android_dev/" class="hub " title="Вы не подписаны на этот хаб" >Разработка под Android</a><span class="profiled_hub" title="Профильный хаб">*</span>
+</div>
+
+  	
+    <div class="content html_format">
+			<img src="http://developer.android.com/images/dialog_progress_spinning.png" alt="image"/><br/>
+<br/>
+Практика создания приложений, отзывчивых к действиям пользователя, предполагает, что все тяжелые операции должны исполняться в отдельном потоке, сообщая тем или иным образом пользователю о своем прогрессе.<br/>
+<br/>
+Android содержит массу способов для организации данного подхода, но одним из самых удобных можно признать использование AsyncTask и ProgressDialog. <br/>
+<br/>
+Эта парочка превосходно решает задачу, но начинает приносить невыносимую боль, когда количество Activity с такой логикой переваливает за одну, что приводит к повторению управляющего кода, и еще большую боль, когда приложение должно поддерживать смену ориентации экрана.<br/>
+<a name="habracut"></a><br/>
+<h5>AsyncTask</h5><br/>
+Для тех, кто не знаком с AsyncTask, поясню, что это специальный абстрактный класс, предоставляющий набор методов для реализации:<br/>
+<ul>
+<li><i>onPreExecute</i> для размещения инициализирующего кода (UI поток)</li>
+<li><i>doInBackground</i> для размещения тяжелого кода, который будет выполняться в другом потоке</li>
+<li><i>onProgressUpdate</i> для информирования о прогрессе (UI поток)</li>
+<li><i>onPostExecute</i> для обработки результата, возвращенного doInBackground (UI поток)</li>
+</ul>и вспомогательных методов<br/>
+<ul>
+<li><i>isCancelled</i> чтобы узнать не отменил ли кто задачу</li>
+<li><i>publishProgress</i> для перевода сообщения о прогрессе в UI поток с последующим вызовом <i>onProgressUpdate</i></li>
+</ul><h5>Суть проблемы</h5><br/>
+Использование упомянутых классов не представляет особого труда, достаточно пары сниппетов, чтобы код заработал как нужно и ProgressDialog начал свое информирование о ходе выполнения задачи. Но, как известно, дьявол кроется в деталях, поэтому стоит только поменять ориетацию экрана, как диалог пропадет, так же как и результат долгой, но невероятно ответственной операции.<br/>
+<br/>
+Причина заключается в жизненном цикле Activity: смена ориентации экрана трактуется как смена конфигурации, что приводит к пересозданию Activity. Можно, конечно, отключить этот механизм, задав тег <code>android:configChanges=&quot;orientation&quot;</code> у Activity и определив собственный код, который, при необходимости, произведет необходимые изменения. Но это будет необоснованное внедрение.<br/>
+<br/>
+Решением будет создание специального класса по управлению связкой Activity-AsyncTask-ProgressDialog, назовем его AsyncTaskManager.<br/>
+<br/>
+<h5>Activity</h5><br/>
+Итак, в идеале наша Activity должна делать всего пять вещей (код из проекта примера):<br/>
+<ul>
+<li>Создавать AsyncTaskManager в методе onCreate<br/>
+ <pre><code class="java">&nbsp;&nbsp;&nbsp;&nbsp;mAsyncTaskManager = new AsyncTaskManager(this, this);</code></pre></li>
+<li>Делегировать AsyncTaskManager восстановление задачи из состояния<br/>
+ <pre><code class="java">&nbsp;&nbsp;&nbsp;&nbsp;mAsyncTaskManager.handleRetainedTask(getLastNonConfigurationInstance());</code></pre></li>
+<li>Создавать конкретную задачу и отдавать ее в управление AsyncTaskManager’а<br/>
+ <pre><code class="java">&nbsp;&nbsp;&nbsp;&nbsp;mAsyncTaskManager.setupTask(new Task(getResources()));</code></pre></li>
+<li>Делегировать AsyncTaskManager сохранение задачи в состояние<br/>
+ <pre><code class="java">&nbsp;&nbsp;&nbsp;&nbsp;return mAsyncTaskManager.retainTask();</code></pre></li>
+<li>Обрабатывать асинхронное завершение задачи</li>
+</ul>Для последнего пункта и уменьшения связанности между Activity и AsyncTaskManager можно создать интерфейс для уведомления о завершении и реализовать его:<br/>
+<br/>
+<pre><code class="java">&nbsp;&nbsp;&nbsp;&nbsp;public interface OnTaskCompleteListener {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void onTaskComplete(Task task);
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</code></pre><br/>
+В параметре метода будет передаваться задача, выполнение которой было завершено.<br/>
+<br/>
+<h5>AsyncTaskManager</h5><br/>
+AsyncTaskManager должен отвечать за корректную работу всех компонентов, что сводится к списку следующих задач:<br/>
+<ul>
+<li>Создавать диалог при инициализации</li>
+<li>При получении задачи в управление запускать ее</li>
+<li>Отображать состояние задачи в диалоге</li>
+<li>Отсоединяться от задачи после сохранения ее в состояние и присоединяться заново при восстановлении</li>
+<li>Отменять задачу при отмене диалога</li>
+<li>Закрывать диалог при завершении задачи</li>
+<li>Сообщать Activity о завершении либо отмене задачи</li>
+</ul>Для общения с задачей достаточно следующего интерфейса, который следует реализовать и передать в задачу:<br/>
+<br/>
+<pre><code class="java">&nbsp;&nbsp;&nbsp;&nbsp;public interface IProgressTracker {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void onProgress(String message);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void onComplete();
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</code></pre><br/>
+Реализация:<br/>
+<br/>
+<pre><code class="java">&nbsp;&nbsp;&nbsp;&nbsp;@Override
+&nbsp;&nbsp;&nbsp;&nbsp;public void onProgress(String message) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (!mProgressDialog.isShowing()) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mProgressDialog.show();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mProgressDialog.setMessage(message);
+&nbsp;&nbsp;&nbsp;&nbsp;}
+    
+&nbsp;&nbsp;&nbsp;&nbsp;@Override
+&nbsp;&nbsp;&nbsp;&nbsp;public void onComplete() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mProgressDialog.dismiss();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mAsyncTask.setProgressTracker(null); 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mTaskCompleteListener.onTaskComplete(mAsyncTask);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mAsyncTask = null;
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</code></pre><br/>
+Присоединение к задаче:<br/>
+<br/>
+<pre><code class="java">&nbsp;&nbsp;&nbsp;&nbsp;mAsyncTask.setProgressTracker(this);</code></pre><br/>
+Отсоединение от задачи:<br/>
+<br/>
+<pre><code class="java">&nbsp;&nbsp;&nbsp;&nbsp;mAsyncTask.setProgressTracker(null); 
+&nbsp;&nbsp;&nbsp;&nbsp;mAsyncTask = null;
+</code></pre><br/>
+Отмена диалога:<br/>
+<br/>
+<pre><code class="java">&nbsp;&nbsp;&nbsp;&nbsp;@Override
+&nbsp;&nbsp;&nbsp;&nbsp;public void onCancel(DialogInterface dialog) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mAsyncTask.setProgressTracker(null); 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mAsyncTask.cancel(true);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mTaskCompleteListener.onTaskComplete(mAsyncTask);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mAsyncTask = null;
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</code></pre><br/>
+AsyncTaskManager выполняет роль своеобразного ключа, который подключает и отключает работающую задачу к возможно пересозданному экземпляру Activity. Кроме того, он берет на себя и скрывает логику работы с ProgressDialog.<br/>
+<br/>
+<h4>AsyncTask</h4><br/>
+Для задачи, помимо реализации основных методов, требуется реализация метода, который поможет соединять/разъединять ее с AsyncTaskManager’ом:<br/>
+<br/>
+<pre><code class="java">&nbsp;&nbsp;&nbsp;&nbsp;public void setProgressTracker(IProgressTracker progressTracker) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mProgressTracker = progressTracker;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (mProgressTracker != null) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mProgressTracker.onProgress(mProgressMessage);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (mResult != null) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mProgressTracker.onComplete();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</code></pre><br/>
+Как видно из приведенного кода, задача сохраняет вычисленный результат и последнее сообщение о прогрессе, и, в зависимости от состояния, вызывает тот или иной метод трекера (AsyncTaskManager’а).<br/>
+<br/>
+Таким образом, даже если задача завершится до пересоздания Activity, та получит уведомление о завершении задачи.<br/>
+<br/>
+<h5>Результат</h5><br/>
+Теперь можно безбоязненно крутить телефон в руках – все задачи будут обработаны корректно.<br/>
+<br/>
+Использование такого менеджера существенно снижает количество кода в Activity и позволяет переиспользовать данную функциональность в проекте. Данный подход я разработал и успешно применил в своем недавнем приложении.<br/>
+<br/>
+<h5>Ссылки</h5><br/>
+<a href="https://docs.google.com/leaf?id=0Bxtnvl856FZ_ZTc5ZTU4YWYtODIzZC00NTU3LWI0NDgtMGZiODY2MWEzYTli&amp;hl=en">Архив с проектом примера</a><br/>
+<a href="http://developer.android.com/reference/android/os/AsyncTask.html">Описание AsyncTask (en)</a><br/>
+<a href="http://developer.android.com/resources/articles/painless-threading.html">Простая работа с потоками (en)</a><br/>
+<a href="http://developer.android.com/guide/topics/ui/dialogs.html">Диалоги в Android (en)</a>
+			<div class="clear"></div>
+    </div>
+
+    
+<ul class="tags">
+	<li ><a href="http://habrahabr.ru/search/?q=%5Bandroid%5D&target_type=posts" rel="tag">android</a></li><li >, <a href="http://habrahabr.ru/search/?q=%5Basynctask%5D&target_type=posts" rel="tag">asynctask</a></li><li >, <a href="http://habrahabr.ru/search/?q=%5Bprogressdialog%5D&target_type=posts" rel="tag">progressdialog</a></li>
+</ul>
+
+		<div class="infopanel_wrapper">
+	<div class="infopanel " id="infopanel_post_114570">
+	
+				<div class="voting   ">
+	
+						<span class="plus" title="Голосовать могут только зарегистрированные пользователи."></span>
+	
+					<div class="mark positive ">
+							<span class="score" title="Всего 60: &uarr;53 и &darr;7">+46</span>
+					</div>
+					
+						<span class="minus" title="Голосовать могут только зарегистрированные пользователи."></span>
+		
+				</div>
+	
+		<div class="pageviews" title="Просмотры поста">12005</div>
+			
+		<div class="favorite">
+				<a class="guest"	href="#" onclick="return false;" title="Только зарегистрированные пользователи могут добавлять посты в избранное"></a>
+		</div>
+		<div class="favs_count" title="Количество пользователей, добавивших пост в избранное">208</div>
+		
+		
+		
+	
+	
+	
+	
+				<div class="author">
+					<a title="Автор текста" href="http://habrahabr.ru/users/mike114/" >mike114</a>
+					<span class="rating" title="рейтинг пользователя">11,3</span>
+						<a href="https://plus.google.com/105389430594509637232/?rel=author" class="googleplus_profile">G+</a>
+				</div>
+		
+	
+	
+		
+			<div class="share">
+				<div class="twitter">
+					<a href="http://twitter.com/intent/tweet?text=%D0%9F%D1%80%D0%BE%D1%81%D1%82%D0%BE%D0%B5+%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5+AsyncTask+%D0%B8+ProgressDialog+%D0%B2+Android+http://habr.ru/p/114570/+via+%40habrahabr+%23habr" title="Опубликовать ссылку в Twitter" target="_blank"></a>
+				</div>
+				<div class="vkontakte">
+					<a href="http://vk.com/share.php?url=http://habrahabr.ru/post/114570/" title="Опубликовать ссылку во ВКонтакте" onclick="window.open(this.href, 'Опубликовать ссылку во Вконтакте', 'width=800,height=300'); return false"></a>
+				</div>
+				<div class="facebook">
+					<a href="https://www.facebook.com/sharer/sharer.php?u=http://habrahabr.ru/post/114570/" title="Опубликовать ссылку в Facebook" onclick="window.open(this.href, 'Опубликовать ссылку в Facebook', 'width=640,height=436,toolbar=0,status=0'); return false"></a>
+				</div>
+				<div class="googleplus">
+					<a href="https://plus.google.com/share?url=http://habrahabr.ru/post/114570/" title="Опубликовать ссылку в Google Plus" onclick="window.open(this.href, 'Опубликовать ссылку в Google Plus', 'width=800,height=300'); return false"></a>
+				</div>
+			</div>
+	
+	</div>
+	<div class="clear"></div>
+</div>
+
+
+
+
+    
+		
+	</div>
+
+    </div>
+
+  	    
+    <div id="adriver_banner_132032996"></div>  
+
+  <script type="text/javascript">  
+      function show_inner_banner_block(name, url){
+          if( typeof(name) !== 'undefined'){
+              $.get('/html/'+name+'/1402500954/', function(html){
+                  $('#adriver_banner_132032996').html(html);
+                  $('.'+name+'_inner_banner').removeClass('hidden');
+                  if( typeof(url) !== 'undefined'){
+                      $('.'+name+'_inner_banner .block_url').attr('href', url);
+                  }
+              })
+          }
+      }
+
+        $(function(){
+            var keyword = '';
+            if (typeof crtg_content !== 'undefined' && crtg_content) { keyword = crtg_content; }
+            var custom = { 4:ar_duo1 };
+                custom[1] = 'android_dev';
+
+            /* Антоша не удаляй это условие блеать! Как я тестить буду? */
+            //if (true)
+            //    show_inner_banner_block('kaspersky3');
+            //else
+                new adriver("adriver_banner_132032996", {sid: 176776, bt: 52, bn: 3, custom: custom, keyword: keyword});
+        });
+    </script>
+    
+
+
+  	
+  		<div class="comments_list " id="comments">
+
+  <h2 class="title ">Комментарии (<span id="comments_count">5</span>)
+  
+  
+  </h2>
+
+    <div class="comment_item" id="comment_3697597" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="3697597">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_3697597" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 2: &uarr;1 и &darr;1">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/Tibr/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/Tibr/" class="username">Tibr</a><span class="comma">,</span>
+            <time>27 февраля 2011 в 17:29</time>
+
+            <a href="#comment_3697597" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Неплохая статья. Я вот только одного не понял — зачем нам 2 интерфейса, не логичнее было бы создать один, который отвечал бы за полное обслуживание задачи?
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_3697597">
+        <div class="comment_item" id="comment_3697627" >
+
+    <span class="parent_id" data-parent_id="3697597"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="3697627">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_3697627" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 2: &uarr;1 и &darr;1">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/mike114/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/mike114/" class="username">mike114</a><span class="comma">,</span>
+            <time>27 февраля 2011 в 17:48</time>
+
+            <a href="#comment_3697627" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="3697627" data-parent_id="3697597" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_3697597" data-id="3697627" data-parent_id="3697597" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Спасибо. Да, действительно, можно слегка модифицировать IProgressTracker (добавив Task в onComplete) и использовать его в связках Actvity-Manager и Manager-Task. В этом случае Activity тоже сможет следить за прогрессом, если ей это нужно. Но в моей задаче это было не нужно, поэтому я создал второй, более строгий интерфейс. Двух связок не избежать, если стоит задача по-максимуму вынести всю логику во вспомогательный класс.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_3697627">
+    </div>
+</div>
+
+    </div>
+</div>
+
+    <div class="comment_item" id="comment_3697651" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="3697651">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_3697651" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 6: &uarr;4 и &darr;2">+2</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/darkolorin/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/0dc/532/ad0/0dc532ad0a373af014894deb819b9c49_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/darkolorin/" class="username">darkolorin</a><span class="comma">,</span>
+            <time>27 февраля 2011 в 18:04</time>
+
+            <a href="#comment_3697651" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Что ни день то статья про разработку под Android! Не может не радовать!
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_3697651">
+    </div>
+</div>
+
+    <div class="comment_item" id="comment_3697766" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="3697766">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_3697766" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/le0pard/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/5d4/aca/f1e/5d4acaf1ec82969fa4166fae0345e65a_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/le0pard/" class="username">le0pard</a><span class="comma">,</span>
+            <time>27 февраля 2011 в 19:03</time>
+
+            <a href="#comment_3697766" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            А есть еще getLastNonConfigurationInstance и onRetainNonConfigurationInstance. Этого достаточно, чтобы восстановить диалог с уже запущенным AsyncTask
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_3697766">
+        <div class="comment_item" id="comment_3698315" >
+
+    <span class="parent_id" data-parent_id="3697766"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="3698315">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_3698315" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/mike114/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/mike114/" class="username">mike114</a><span class="comma">,</span>
+            <time>27 февраля 2011 в 23:41</time>
+
+            <a href="#comment_3698315" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="3698315" data-parent_id="3697766" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_3697766" data-id="3698315" data-parent_id="3697766" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Первый метод используется в строке «mAsyncTaskManager.handleRetainedTask(getLastNonConfigurationInstance());» Во втором я вызываю «return mAsyncTaskManager.retainTask();». Это как раз те вызовы, которые делегируются. Идея в том, чтобы вынести весь код поддержки в AsyncTaskManager.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_3698315">
+    </div>
+</div>
+
+    </div>
+</div>
+
+</div>
+
+  					<p class="for_users_only_msg">Только зарегистрированные пользователи могут оставлять комментарии.<br><a href="https://habrahabr.ru/auth/login/">Войдите</a>, пожалуйста.</p>
+
+
+  	
+<form action="/json/favorites/" method="post" id="edit_tags_form" class="hidden">
+  <input type="hidden" name="action" value="add" />
+  <input type="hidden" name="ti" value="0" />
+  <input type="hidden" name="tt" value="0" />
+  <label>Пометьте топик понятными вам метками, если хотите</label>
+  <input type="text" name="tags_string" class="tags_string" />
+  <div class="description">Метки лучше разделять запятой. Например: <i>общение, социальные сети, myspace.com, подростки, мердок</i></div>
+  <input type="submit" value="Сохранить" class="submit" /> или <a href="#" class="close" onclick="return close_edit_tags()">закрыть</a>
+</form>
+    
+    
+
+  </div>
+  <div class="sidebar_right">
+      	<div class="banner_300x100">
+		<!--  AdRiver code START. Type:AjaxJS Site: habrahabr PZ: 0 BN: 5 -->
+		<div id="adriver_banner_2100516578"></div>
+		<script type="text/javascript">
+			$(function(){
+				var keyword = '';
+				if (typeof crtg_content !== 'undefined' && crtg_content) { keyword = crtg_content; }
+
+				var custom = {4:ar_duo1};
+					custom[1] = 'android_dev';
+
+				new adriver("adriver_banner_2100516578", {sid: 176776, bt: 52, bn: 5, custom: custom, keyword: keyword});
+			}());
+		</script>
+	</div>
+
+
+  			<div class="banner_300x500">
+		<div id="adriver_banner_1863387959"></div>
+		<script type="text/javascript">
+            function show_bn1_block(name, url){
+                console.log('show' + name);
+                if( typeof(name) !== 'undefined'){
+                    $.get('/html/'+name+'/1402500954/', function(html){
+                        $('#adriver_banner_1863387959').html(html);
+                        if( typeof(url) !== 'undefined'){
+                            $('.'+name+'_inner_banner .block_url').attr('href', url);
+                        }
+                    })
+                }
+            }
+
+			$(function(){
+
+				var keyword = '';
+				if (typeof crtg_content !== 'undefined' && crtg_content) { keyword = crtg_content; }
+
+				var custom = {4:ar_duo1};
+					custom[1] = 'android_dev';
+
+                 new adriver("adriver_banner_1863387959", {sid: 176776, bt: 52, bn: 1, custom: custom, keyword: keyword});
+			}());
+		</script>
+	</div>
+
+  		
+  		
+<div class="block daily_best_posts">
+  <div class="title">Лучшее <sup>за 24 часа</sup></div>
+  <div class="posts_list">
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/226131/" class="post_name">Илон Маск откроет все патенты Tesla Motors</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/226127/" class="post_name">Каково это — жить в звездном кластере?</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/226115/" class="post_name">Астрономы обнаружили в Малом Магеллановом Облаке звёздный объект, ранее считавшийся гипотетическим</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/225065/" class="post_name">Революция дата-байндинга с Object.Observe()</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/226121/" class="post_name">Суперкомпьютер, прошедший тест Тьюринга, оказался блефом</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/226109/" class="post_name">Релиз Firefox 30</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/226111/" class="post_name">Часть научных инструментов межпланетной станции «Розетта» вошла в рабочий режим</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/226143/" class="post_name">Распознование речи для чайников</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/226141/" class="post_name">Почему пришло время поддерживать только Android 4.0 и выше?</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/226071/" class="post_name">Учебник по языку программирования D. Часть 1</a>
+      </div>
+  </div>
+  <div class="all"><a href="/top/">все лучшие</a></div>
+</div>
+
+  	  
+
+
+<div class="block similar_posts">
+
+	<div class="title">Похожие посты</div>
+  <div class="posts_list">
+    	<div class="post_item">
+    				<a class="post_name" href="/post/225101/">Мой опыт разработки Android игры и несколько слов о монетизации</a>
+    				<span class="when"> 3 июня в 22:02</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" href="/post/225047/">Android 4.4.3 стал доступен для линейки Nexus (в том числе Nexus 4)</a>
+    				<span class="when"> 3 июня в 12:56</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" href="/post/224977/">Android-монстрик по имени FunLib</a>
+    				<span class="when"> 2 июня в 21:15</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" href="/post/176093/">Основы безопасности операционной системы Android. Безопасность на уровне Application Framework. Binder IPC</a>
+    				<span class="when"> 2 июня в 18:41</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" href="/post/224943/">Android с 64-битным ядром от Intel в вопросах и ответах</a>
+    				<span class="when"> 5 июня в 09:11</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" href="/post/225423/">Вышло официальное обновление Android 4.4.3 доступное «по воздуху»</a>
+    				<span class="when"> 6 июня в 02:54</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" href="/post/226141/">Почему пришло время поддерживать только Android 4.0 и выше?</a>
+    				<span class="when">сегодня в 10:07</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" href="/post/225947/">SwiftKey для Android. Теперь бесплатно</a>
+    				<span class="when">11 июня в 12:41</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" href="/post/225543/">Как разрабатывать безопасные приложения под Android. Семинар в Яндексе</a>
+    				<span class="when"> 7 июня в 17:06</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" href="/post/119023/">Заметки о ProgressDialog или как правильно показать прогресс выполнения</a>
+    				<span class="when">12 мая 2011 в 09:37</span>
+      </div>
+  </div>			
+</div>
+
+
+	
+  	  
+<div class="block similar_questions">
+	<div class="title">Вопросы по теме</div>
+
+	<div class="posts_list">
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/93235?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Fragment и AsyncTast</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/70770?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">AsynTask: почему "sa" не видит адаптер?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/67188?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Скачивание файла и парсинг в андроид</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/54908?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как решить ошибку с ListView и AsyncTask в Android?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/7321?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Android: как аккуратно дождаться завершения AsyncTask после cancel()?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/102717?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">MNP: как реализовать отображение оператора в звонилке Android 4.1?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/102581?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Какая библиотека/фреймворк подходит для создания 3d-ландшафтных игр типа "Ферма"?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/102541?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как загружать данные по расписанию?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/102423?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Проблемы создания проекта LibGDX</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/102413?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Macbook Air и разработка под Android</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/102371?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как подавить вертикальный скролл на Android (и вероятно iOS)?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/102331?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как использовать Android как внешние колонки для ПК по USB</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/102309?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как отправить сообщение с андроида?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/102299?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">In-app покупки в android-приложении через свой сайт</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/102177?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Какой девайс купить для тестирование Android</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/102165?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Что теряет разработчик под Android используя не родную Java, a C# Xamarin?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/102117?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Вопрос по Samsung Galaxy Gear</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/102101?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Toster.app - планируется ли?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/102055?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как тестировать Android приложения на своём смартфоне не используя Virtual Device в ADT</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/101933?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Какой сервис статистики позволяет для мобильного приложения считать число юзеров, у которых случилось ровно N крэшей за отчётный период?</a>
+		</div>
+  </div>			
+		
+</div>
+
+  		
+  		
+
+	<div class="block live_broadcast">
+		<div class="title">Что обсуждают? </div>
+
+		<div class="live_broadcast_activity">
+				<div class="posts_list">
+							<div class="post_item">
+								
+								<a href="/post/226171#comments" class="post_name">Разделить число на заданное количество кубиков</a>&nbsp;<span class="count">4</span>
+							</div>
+							<div class="post_item">
+								
+								<a href="/post/224315#comments" class="post_name">Наш вариант подхода к написанию JS приложений. Загрузка скриптов и проксирование</a>&nbsp;<span class="count">21</span>
+							</div>
+							<div class="post_item">
+								
+								<a href="/post/226109#comments" class="post_name">Релиз Firefox 30</a>&nbsp;<span class="count">15</span>
+							</div>
+							<div class="post_item">
+								
+								<a href="/post/226073#comments" class="post_name">The Machine. Новая компьютерная архитектура от HP</a>&nbsp;<span class="count">54</span>
+							</div>
+							<div class="post_item">
+								
+								<a href="/post/226141#comments" class="post_name">Почему пришло время поддерживать только Android 4.0 и выше?</a>&nbsp;<span class="count">37</span>
+							</div>
+							<div class="post_item">
+								
+								<a href="/post/226079#comments" class="post_name">Каков он — рекламный бюджет стартапа?</a>&nbsp;<span class="count">22</span>
+							</div>
+							<div class="post_item">
+								
+								<a href="/post/226015#comments" class="post_name">Карьерное исследование в IT: студенты хотят работать в крупных компаниях</a>&nbsp;<span class="count">9</span>
+							</div>
+							<div class="post_item">
+								
+								<a href="/post/226131#comments" class="post_name">Илон Маск откроет все патенты Tesla Motors</a>&nbsp;<span class="count">125</span>
+							</div>
+							<div class="post_item">
+								
+								<a href="/post/226127#comments" class="post_name">Каково это — жить в звездном кластере?</a>&nbsp;<span class="count">64</span>
+							</div>
+							<div class="post_item">
+								
+								<a href="/post/225851#comments" class="post_name">Phalcon Framework на продакшене</a>&nbsp;<span class="count">32</span>
+							</div>
+				</div>
+				<div class="all"><a href="/posts/">все посты</a></div>
+		</div>
+
+	</div>
+  
+  		<!--  AdRiver code START. Type:AjaxJS Site: habrahabr PZ: 0 BN: 2 -->
+
+<div id="adriver_banner_480931290" class="adbanner"></div>
+
+
+<script type="text/javascript">
+    function show_bn2_block(name, url){
+        if( typeof(name) !== 'undefined'){
+            $.get('/html/'+name+'/1402500954/', function(html){
+                $('#adriver_banner_480931290').html(html);
+                if( typeof(url) !== 'undefined'){
+                    $('.'+name+'_inner_banner .block_url').attr('href', url);
+                }
+            })
+        }
+    }
+
+    $(function(){
+
+        var check_scroll_position = function() {
+            var height = $(window).height();
+            var scrollTop = $(window).scrollTop();
+            var scrollBottom = $(window).scrollTop() + height;
+            var blockTop = $('#adriver_banner_480931290').position().top;
+            var show = scrollTop < blockTop && blockTop < scrollBottom;
+            //console.log('scroll', scrollTop, blockTop, scrollBottom, show)
+            if( show ){
+                //console.log('show bn2');
+                $( window ).off('scroll', check_scroll_position);
+                $( window ).trigger('show_bn2');
+            }
+        };
+        $( window ).on('scroll', check_scroll_position);
+
+        $( window ).on('show_bn2', function(){
+            var keyword = '';
+            if (typeof crtg_content !== 'undefined' && crtg_content) { keyword = crtg_content; }
+            var custom = {4:ar_duo1};
+            custom[1] = 'android_dev';
+            new adriver("adriver_banner_480931290", {sid: 176776, bt: 52, bn: 2, custom: custom, keyword: keyword});
+        });
+    });
+    </script>
+<!--  AdRiver code END  -->
+
+  		
+<div class="block best_company">
+
+		<div class="title">Компания дня <img src="/images/bg_cicle_help.png" title="
+Компания, чей пост набрал максимальное количество баллов<br>
+среди всех опубликованных в корпоративных блогах постах за <br>
+прошедшие сутки. Учитываются посты, для которых истек срок голосования <br>(3 дня с момента публикации)." class="help-tip"></div>
+
+		<div class="company_info">
+			<div class="name">
+			 <img class="favicon" src="//habrastorage.org/getpro/habr/companies/aaf/513/b2e/aaf513b2e4aa8757d481089210cdec7e_small.png" alt="ZeptoLab" height="16" width="16" />
+			 <div class="company_name"><a href="http://habrahabr.ru/company/ZeptoLab/" class="title">ZeptoLab</a></div>
+			</div>
+
+			<p>Последний пост:
+				<a href="http://habrahabr.ru/company/ZeptoLab/blog/225735/">ZeptoLab и Codeforces объединяют усилия</a>
+			</p>
+
+			<div class="buttons">
+  			<div id="fans_count">734 подписчика</div>
+			</div>
+		</div>
+
+	</div>
+
+
+  		
+
+  		
+	<div class="block new_vacanies">
+  <a href="http://brainstorage.me/jobs?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo" class="title">Brainstorage</a>
+  <div class="vacancies">
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/19869?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">iOS разработчик</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/19871?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Android разработчик</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/19873?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Windows 8 / Windows Phone 8 разработчик</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/19859?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">iOS разработчик</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/19837?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Разработчик .NET</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/19669?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Разработчик iOS-приложений</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/17789?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">iOS-разработчик</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/19783?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Android/iOS developer</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/11125?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Senior iOS developer</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/14295?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Senior Android developer</a>
+		</div>
+  </div>
+  <div class="all"><a href="http://brainstorage.me/jobs?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">все вакансии</a></div>
+</div>
+
+  		
+	<div class="block freelansim">
+	  <a href="http://freelansim.ru?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo" class="title"></a>
+	  <div class="tasks">
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/72211?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Доработать систему учета заказов (PHP)</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/72205?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Поправить баги и доработать IPB</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/72201?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">QA для веб- и мобильного приложения</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/72197?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Скрипт работы с трекером и постбеком</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/67361?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Требуется продать 5 наручных часов посредством раскрутки сайта</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/72195?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Нужно анимировать персонажа игры</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/72191?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Портал поиска работы (что-то типа hh.ru)</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/72187?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Перерисовать лого</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/72181?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Проектирование ноды для виртуализации на базе 24 SSD дисков</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/71779?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Разработка Android приложения</a>
+				</div>
+
+	  </div>
+	  <div class="all"><a href="http://freelansim.ru/tasks?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">все заказы</a></div>
+	</div>
+
+  		
+  		
+  		
+  </div>
+  <div class="clear"></div>
+
+  <script>
+    // hubs to GA
+      ga('send', 'event', 'Post_view', 'android_dev (Разработка под Android)',  window.location.pathname + window.location.search);
+  </script>
+
+
+
+        	
+	<div class="rotated_posts">
+			<div class="rotated_post ">
+				<a href="http://habrahabr.ru/company/host-tracker/blog/212105/" class="grey">Тим Бернерс-Ли: нам необходимо заново децентрализовать Интернет</a>
+			</div>
+			<div class="rotated_post ">
+				<a href="http://habrahabr.ru/company/ifree/blog/216045/" class="grey">HTML по стандартам</a>
+			</div>
+			<div class="rotated_post last">
+				<a href="http://habrahabr.ru/post/223873/" class="grey">Раздача научного софта. Бесплатно</a>
+			</div>
+		<div class="clear"></div>
+	</div>
+
+
+        <div class="clear"></div>
+
+        <div class="footer_panel">
+          <div id="footer">
+	<dl>
+		<dd><a href="https://habrahabr.ru/auth/login/">Войти</a></dd>
+		<dd><a href="https://habrahabr.ru/auth/register/">Регистрация</a></dd>
+	</dl>
+	<dl>
+		<dt>Разделы</dt>
+		<dd><a href="http://habrahabr.ru/posts/top/">Посты</a></dd>
+		<dd><a href="http://habrahabr.ru/hubs/">Хабы</a></dd>
+		<dd><a href="http://habrahabr.ru/companies/">Компании</a></dd>
+		<dd><a href="http://habrahabr.ru/users/">Пользователи</a></dd>
+		<dd><a href="http://toster.ru/?_aa=press_anykey">Q&amp;A</a></dd>
+		<dd><a href="http://habrahabr.ru/sandbox/">Песочница</a></dd>
+		
+	</dl>	
+	<dl>
+		<dt>Инфо</dt>
+		<dd><a href="/info/about/">О сайте</a></dd>
+		<dd><a href="/info/help/rules/">Правила</a></dd>
+		<dd><a href="/info/help/">Помощь</a></dd>
+		<dd><a href="/info/agreement/">Соглашение</a></dd>
+	</dl>
+	<dl>
+		<dt>Услуги</dt>
+		<dd><a href="/info/advertising/">Реклама</a></dd>
+		<dd><a href="/info/advertising/corporate/">Корпоративные тарифы</a></dd>
+		<dd><a href="/info/advertising/workshops/">Семинары</a></dd>
+		<dd><a href="/special/">Спецпроекты</a></dd>
+	</dl>
+	<dl>
+		<dt>Разное</dt>
+		<dd><a href="/apps/">Приложения</a></dd>
+		<dd><a href="/special/testdrive/">Тест-драйвы</a></dd>
+		<dd><a href="/info/hello_startup/">Помощь стартапам</a></dd>
+		<dd><a href="/special/minsvyaz/">Льготы стартапам</a></dd>
+	</dl>
+	<div class="copyright">
+
+		<div class="about">
+			<a href="http://tmtm.ru/">TM</a>
+			© 2006&#8211;2014
+			<br><br>
+			<a href="http://habrahabr.ru/feedback/">Служба поддержки</a><br><br>
+			    <a href="http://m.habrahabr.ru?mobile=yes">Мобильная версия</a><br><br>
+			
+
+			<div class="social_accounts">
+				<a href="https://twitter.com/habrahabr" class="tw"></a>
+				<a href="https://www.facebook.com/habrahabr.ru" class="fb"></a>
+				<a href="http://vk.com/habr" class="vk"></a>
+				<!-- <a href="" class="gp"></a> //-->
+			</div>
+
+		</div>
+	</div>
+
+</div>    
+          <div class="footer_logos">
+		
+		<div class="project brainstorage">
+			<a href="http://brainstorage.ru" class="icon "></a>
+			<div class="text">Все мозги в одном месте</div>
+		</div>
+
+		<div class="project toster">
+			<a href="http://toster.ru" class="icon "></a>
+			<div class="text">Q&A-сервис для разработчиков</div>
+		</div>
+		
+		<div class="project freelansim">
+			<a href="http://freelansim.ru" class="icon "></a>
+			<div class="text">Заказы для фрилансеров</div>
+		</div>
+		
+		<div class="project autokadabra">
+			<a href="http://autokadabra.ru" class="icon "></a>
+			<div class="text ">Уютная и дружелюбная</div>
+		</div>
+		
+</div>
+
+        </div>
+      </div>
+    </div>
+  
+
+      <script type="text/javascript" src="/javascripts/1402500954/libs/jquery.cookie.js"></script>
+      <script type="text/javascript">
+        $(document).ready( function(){
+          window.tmidLogin = function(){ return false; };
+          if( $.cookie('tmid_no_check') == undefined ) {
+            var expire = new Date();
+            expire.setMinutes(expire.getMinutes() + 10 );
+            $.cookie('tmid_no_check', 1, { expires: expire } );
+            $.getScript("https://id.tmtm.ru/checklogin", function(){
+              if( window.tmidLogin() ) {
+
+                  var href = $('#login').attr('href');
+
+                  if( href !== undefined ) {
+                      window.location.href = href;
+                  }
+              }
+            });
+          }
+        });
+      </script>
+
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $.jGrowl.defaults.closerTemplate = '<div>Закрыть все уведомления</div>';         
+        $(".help-tip").tipTip({maxWidth: "300px", edgeOffset: 10});  
+      });
+      // global vars
+      var g_base_url = 'habrahabr.ru';
+      var g_show_xpanel = false;
+      var g_base_fullurl = 'http://habrahabr.ru/';
+      var g_is_guest = false;
+    </script>
+    
+    <script type="text/javascript" src="/javascripts/1402500954/_parts/shortcuts.js"></script>
+    
+    
+    <script type="text/javascript" src="/javascripts/1402500954/_parts/float_block.js"></script>
+    
+    	<script type="text/javascript" src="http://habrahabr.ru/viewcount/post/114570/"></script>
+
+    
+
+  </body>
+</html>
