@@ -1,7 +1,6 @@
 package by.org.cgm.quakeviewer;
 
 import android.app.ListActivity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mapswithme.maps.api.MWMPoint;
 import com.mapswithme.maps.api.MapsWithMeApi;
@@ -21,37 +21,20 @@ import by.org.cgm.jdbf.JdbfTask;
 import by.org.cgm.quakeviewer.quake.QuakeContent;
 import by.org.cgm.quakeviewer.quake.QuakeContent.QuakeItem;
 
-public class QuakeListActivity extends ListActivity {
+public class QuakeListActivity extends ListActivity implements OnTaskCompleteListener {
 
+    private AsyncTaskManager mAsyncTaskManager;
     QuakeAdapter mQuakeAdapter;
-    public static ProgressDialog progress;
+    //public static ProgressDialog progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quake_list);
 
-        progress = ProgressDialog.show(this, "Загрузка", "Загружаются данные", true, false);
-        JdbfTask task = new JdbfTask();
-        task.execute("http://www.brazer.url.ph/data.dbf");
-        try {
-            task.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        QuakeContent.init();
-        mQuakeAdapter = new QuakeAdapter(this, QuakeContent.ITEMS);
-        setListAdapter(mQuakeAdapter);
-
-        findViewById(R.id.btn_all).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showQuakes(QuakeContent.ITEMS);
-            }
-        });
+        mAsyncTaskManager = new AsyncTaskManager(this, this);
+        // TODO: add UI for load of data
+        mAsyncTaskManager.setupTask(new JdbfTask(getResources()), "http://www.brazer.url.ph/data.dbf");
     }
 
     @Override
@@ -69,6 +52,36 @@ public class QuakeListActivity extends ListActivity {
 
         final String title = quakes.size() == 1 ? quakes.get(0).name : "Quakes of the World";
         MapsWithMeApi.showPointsOnMap(this, title, QuakeDetailActivity.getPendingIntent(this), points);
+    }
+
+    @Override
+    public void onTaskComplete(JdbfTask task) {
+        if (task.isCancelled())
+            Toast.makeText(this, R.string.task_cancelled, Toast.LENGTH_LONG).show();
+        else {
+            Boolean result = null;
+            try {
+                result = task.get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            Toast.makeText(this,
+                    getString(R.string.task_completed, (result!=null) ? result.toString() : "null"),
+                    Toast.LENGTH_LONG).show();
+        }
+
+        if (!QuakeContent.init()) return;
+        mQuakeAdapter = new QuakeAdapter(this, QuakeContent.ITEMS);
+        setListAdapter(mQuakeAdapter);
+
+        findViewById(R.id.btn_all).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showQuakes(QuakeContent.ITEMS);
+            }
+        });
     }
 
     private static class QuakeAdapter extends ArrayAdapter<QuakeItem>

@@ -1,30 +1,84 @@
 package by.org.cgm.jdbf;
 
+import android.content.res.Resources;
 import android.os.AsyncTask;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import by.org.cgm.quakeviewer.QuakeListActivity;
+import by.org.cgm.quakeviewer.IProgressTracker;
+import by.org.cgm.quakeviewer.R;
 
-public class JdbfTask extends AsyncTask<String, Integer, Integer>
+public class JdbfTask extends AsyncTask<String, String, Boolean>
 {
 
     public static ArrayList<QuakeRecord> records;
     private static DBFReader reader;
+    protected final Resources mResources;
+    private Boolean mResult;
+    private String mProgressMessage;
+    private IProgressTracker mProgressTracker;
+
+    public JdbfTask(Resources resources) {
+        mResources = resources;
+        mProgressMessage = resources.getString(R.string.task_starting);
+    }
+
+    public void setProgressTracker(IProgressTracker progressTracker) {
+        mProgressTracker = progressTracker;
+        if (mProgressTracker != null) {
+            mProgressTracker.onProgress(mProgressMessage);
+            if (mResult != null) {
+                mProgressTracker.onComplete();
+            }
+        }
+    }
+
+    /**
+     * <p>Applications should preferably override {@link #onCancelled(Object)}.
+     * This method is invoked by the default implementation of
+     * {@link #onCancelled(Object)}.</p>
+     * <p/>
+     * <p>Runs on the UI thread after {@link #cancel(boolean)} is invoked and
+     * {@link #doInBackground(Object[])} has finished.</p>
+     *
+     * @see #onCancelled(Object)
+     * @see #cancel(boolean)
+     * @see #isCancelled()
+     */
+    @Override
+    protected void onCancelled() {
+        mProgressTracker = null;
+    }
+
+    /**
+     * Runs on the UI thread after {@link #publishProgress} is invoked.
+     * The specified values are the values passed to {@link #publishProgress}.
+     *
+     * @param values The values indicating progress.
+     * @see #publishProgress
+     * @see #doInBackground
+     */
+    @Override
+    protected void onProgressUpdate(String... values) {
+        mProgressMessage = values[0];
+        if (mProgressTracker!=null)
+            mProgressTracker.onProgress(mProgressMessage);
+    }
 
     @Override
-    protected Integer doInBackground(String... params) {
+    protected Boolean doInBackground(String... params) {
         initReader(params[0]);
+        boolean res = false;
         try {
-            formRecords();
+            res = formRecords();
         } catch (JDBFException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        return records.size();
+        return res;
     }
 
     private void initReader(String strUrl) {
@@ -59,29 +113,37 @@ public class JdbfTask extends AsyncTask<String, Integer, Integer>
      * @see #onCancelled(Object)
      */
     @Override
-    protected void onPostExecute(Integer result) {
-        QuakeListActivity.progress.dismiss();
+    protected void onPostExecute(Boolean result) {
+        mResult = result;
+        if (mProgressTracker!=null)
+            mProgressTracker.onComplete();
+        mProgressTracker = null;
+        //QuakeListActivity.progress.dismiss();
     }
 
-    private void formRecords() throws JDBFException, UnsupportedEncodingException {
-        if (reader==null) return;
+    private boolean formRecords() throws JDBFException, UnsupportedEncodingException {
+        if (reader==null) return false;
         int i;
         records = new ArrayList<QuakeRecord>();
         for (i=0; i<reader.getFieldCount(); i++) {
             System.out.print(reader.getField(i).getName()+" ");
         }
         System.out.println();
-        readDataAndAddRecords();
+        boolean res;
+        res = readDataAndAddRecords();
         for (i = 0; i < records.size()/2; i++)
         {
             QuakeRecord temp = records.get(i);
             records.set(i, records.get(records.size() - i - 1));
             records.set(records.size() - i - 1, temp);
         }
+        return res;
     }
 
-    private void readDataAndAddRecords() throws JDBFException {
+    private boolean readDataAndAddRecords() throws JDBFException {
+        int i = 0;
         while (reader.hasNextRecord()) {
+            if (isCancelled()) return false;
             String strings[] = reader.nextRecordStrings();
             QuakeRecord rec = new QuakeRecord();
             for (int j=0; j<strings.length; j++) {
@@ -90,9 +152,9 @@ public class JdbfTask extends AsyncTask<String, Integer, Integer>
             }
             records.add(rec);
             System.out.println();
-            publishProgress(records.size());
-            if (isCancelled()) break;
+            publishProgress(mResources.getString(R.string.task_working, ++i));
         }
+        return true;
     }
 
     public static class QuakeRecord

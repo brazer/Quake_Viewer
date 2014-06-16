@@ -4,6 +4,12 @@
     <string name="app_name">Quake Viewer</string>
     <string name="title_quake_detail">Quake Detail</string>
 
+    <string name="run_task">Run</string>
+    <string name="task_working">Working (%1$d)...</string>
+    <string name="task_starting">Starting...</string>
+    <string name="task_cancelled">Task is cancelled by user</string>
+    <string name="task_completed">Task is completed with result (%1$s)</string>
+
     <string name="show_all">Показать всё</string>
     <string name="open_with_mapswithme">Open With MapsWithMe</string>
     <string name="name">Name:</string>
