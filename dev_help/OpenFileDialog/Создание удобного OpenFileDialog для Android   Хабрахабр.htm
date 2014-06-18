@@ -1,0 +1,2119 @@
+
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta content='width=1024' name='viewport'>
+    
+    
+    <title>Создание удобного OpenFileDialog для Android / Хабрахабр</title>
+    
+    <meta name='yandex-verification' content='67d46b975fa41645' /> <!-- яндекс вебмастер - верификация -->
+
+    <meta name="description" content="Наверное, как и многие разработчики под Android, столкнулся на днях с необходимостью реализовать в своем приложении выбор файла пользователем. Так как изначально в Android такого функционала нет,..." />    
+    <meta name="keywords" content="разработка под android, выбор файлов, intellij idea" />
+    
+    	<meta property="fb:app_id"      content="444736788986613" /> 
+<meta property="og:type"        content="article" /> 
+<meta property="og:url"         content="http://habrahabr.ru/post/203884/" /> 
+<meta property="og:title"       content="Создание удобного OpenFileDialog для Android" /> 
+	<meta property="og:image"       content="http://habrastorage.org/storage3/91a/17f/703/91a17f7032ed216a7fc0d7cdb7936a5b.png" />
+	<link rel="image_src" href="http://habrastorage.org/storage3/91a/17f/703/91a17f7032ed216a7fc0d7cdb7936a5b.png" /><meta property="og:image"       content="http://habrastorage.org/storage3/b95/ce0/a38/b95ce0a38a526eaba309238350309278.png" />
+	<link rel="image_src" href="http://habrastorage.org/storage3/b95/ce0/a38/b95ce0a38a526eaba309238350309278.png" /><meta property="og:image"       content="http://habrastorage.org/storage3/cb6/7e6/738/cb67e6738a4fa7d615782f408448d014.png" />
+	<link rel="image_src" href="http://habrastorage.org/storage3/cb6/7e6/738/cb67e6738a4fa7d615782f408448d014.png" /><meta property="og:image"       content="http://habrastorage.org/storage3/9fe/906/a48/9fe906a48e620852e5fafd2aaffaa27a.png" />
+	<link rel="image_src" href="http://habrastorage.org/storage3/9fe/906/a48/9fe906a48e620852e5fafd2aaffaa27a.png" /><meta property="og:image"       content="http://habrastorage.org/storage3/231/909/d9c/231909d9c533d7866ecc94b8e9392b0b.png" />
+	<link rel="image_src" href="http://habrastorage.org/storage3/231/909/d9c/231909d9c533d7866ecc94b8e9392b0b.png" /><meta property="og:image"       content="http://habrastorage.org/storage3/851/770/dd0/851770dd0402a0d2912ca75ba6828a56.png" />
+	<link rel="image_src" href="http://habrastorage.org/storage3/851/770/dd0/851770dd0402a0d2912ca75ba6828a56.png" />
+	
+<meta property="og:description" content="Наверное, как и многие разработчики под Android, столкнулся на днях с необходимостью реализовать в своем приложении выбор файла пользователем. Так как..." />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@habrahabr" />
+	<meta property="al:ios:url" content="habrahabr://post/203884" />
+<meta property="al:ios:app_store_id" content="778613673" />
+<meta property="al:ios:app_name" content="Habrahabr" />
+<meta property="al:android:url" content="habrahabr://post/203884" />
+<meta property="al:android:app_name" content="Habrahabr" />
+<meta property="al:android:package" content="ru.habrahabr" />
+<meta property="al:windows_phone:url" content="habrahabr://post/203884" />
+<meta property="al:windows_phone:app_name" content="Habrahabr" />
+<meta property="al:windows_phone:app_id" content="460a6bd6-8955-470f-935e-9ea1726a6060" />
+
+
+      <link href="/styles/1402935303/all.css" rel="stylesheet" media="all" />
+  
+    <link href="/styles/1402935303/_parts/navbar.css" rel="stylesheet" media="all" />
+
+      <link href="/styles/1402935303/_parts/posts.css" rel="stylesheet" media="all" />
+  <link href="/styles/1402935303/_parts/comments.css" rel="stylesheet" media="all" />
+  <link href="/styles/1402935303/forms.css" rel="stylesheet" media="all" />
+  <link href="/styles/1402935303/highlight.css" rel="stylesheet" media="all" />
+
+
+    <link href="/styles/1402935303/printer.css" rel="stylesheet" media="print" />
+
+    
+    
+
+      <script src="/javascripts/1402935303/all.js"></script>
+    <script src="/javascripts/1402935303/_parts/_navbar.js"></script>
+
+
+      <script type="text/javascript" src="/javascripts/1402935303/libs/jquery.form.js"></script>
+  <script type="text/javascript" src="/javascripts/1402935303/libs/jquery.cookie.js"></script>
+  <script type="text/javascript" src="/javascripts/1402935303/libs/wysiwyg.js"></script>
+  <script type="text/javascript" src="/javascripts/1402935303/libs/highlight.js"></script>
+  <script type="text/javascript" src="/javascripts/1402935303/libs/jquery-ui-highlight.js"></script>
+  <script type="text/javascript" src="/javascripts/1402935303/_parts/posts.js"></script>
+  <script type="text/javascript" src="/javascripts/1402935303/_parts/comments.js"></script>
+  <script type="text/javascript" src="/javascripts/1402935303/posts/all.js"></script>
+
+
+      <!-- www.criteo.com/ru -->
+<script type='text/javascript'>
+  var crtg_nid="2580";
+  var crtg_cookiename="cto_rtt";
+  var crtg_varname="crtg_content";
+  function crtg_getCookie(c_name){
+    var i,x,y,ARRCookies=document.cookie.split(";");
+    for(i=0;i<ARRCookies.length;i++){
+      x=ARRCookies[i].substr(0,ARRCookies[i].indexOf("="));
+      y=ARRCookies[i].substr(ARRCookies[i].indexOf("=")+1);
+      x=x.replace(/^\s+|\s+$/g,"");
+      if(x==c_name){return unescape(y);}
+    }
+    return'';
+  }
+  var crtg_content = crtg_getCookie(crtg_cookiename);var crtg_rnd=Math.floor(Math.random()*99999999999);
+  var crtg_url=location.protocol+'//rtax.criteo.com/delivery/rta/rta.js?netId='+escape(crtg_nid);crtg_url+='&cookieName='+escape(crtg_cookiename);crtg_url+='&rnd='+crtg_rnd;crtg_url+='&varName=' + escape(crtg_varname);
+  var crtg_script=document.createElement('script');crtg_script.type='text/javascript';crtg_script.src=crtg_url;crtg_script.async=true;
+  if(document.getElementsByTagName("head").length>0)document.getElementsByTagName("head")[0].appendChild(crtg_script);
+  else
+  if(document.getElementsByTagName("body").length>0)document.getElementsByTagName("body")[0].appendChild(crtg_script);
+</script>
+      <script >
+        var N = 5;
+        var ar_duo1 = Math.floor(Math.random()*N+1);
+      </script>
+      <script type="text/javascript" src="/javascripts/1402935303/adriver.core.2.js"></script>
+
+    <link title="Хабрахабр / Комментарии к публикации «Создание удобного OpenFileDialog для Android»" type="application/rss+xml" rel="alternate" href="http://habrahabr.ru/rss/post/203884/"/>
+        
+    
+    
+<script type="text/javascript">
+
+    var user_type = "guest";
+    var username = 'guest';
+
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+    ga('create', 'UA-726094-1',  'auto' ); 
+
+  ga('require', 'displayfeatures');
+  ga('set', 'dimension1', user_type); // user type - guest/readonly/habrauser
+  ga('set', 'dimension2', username); // username
+
+
+  ga('send', 'pageview');
+  
+</script>
+
+
+
+<script type="text/javascript">
+var pp_gemius_identifier = new String('p8zr4.NqiIZJgD2cnP2s5fWWnIQFHrAvZ280B955gIr.f7');
+</script>
+<script src="/javascripts/1402935303/gemius.js"></script>
+
+
+
+
+
+
+
+    
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+(function (d, w, c) {
+    (w[c] = w[c] || []).push(function() {
+        try {
+            w.yaCounter24049213 = new Ya.Metrika({id:24049213,
+                    webvisor:true,
+                    clickmap:true,
+                    trackLinks:true,
+                    accurateTrackBounce:true});
+        } catch(e) { }
+    });
+
+    var n = d.getElementsByTagName("script")[0],
+        s = d.createElement("script"),
+        f = function () { n.parentNode.insertBefore(s, n); };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";
+
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else { f(); }
+})(document, window, "yandex_metrika_callbacks");
+</script>
+<noscript><div><img src="//mc.yandex.ru/watch/24049213" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+  </head>
+
+  <body>
+    
+    <div id="layout">
+      <div id="navbar_overlay" class="hidden"></div>
+<div id="navbar">
+    <div class="nav_panel">
+        <a href="http://habrahabr.ru/" class="logo"></a>
+
+            <a href="/posts/" class="tab tab_menu" data-tab="menu_tab" title="Меню"></a>
+            <a href="https://habrahabr.ru/auth/login/" class="tab tab_login" id="login" title="Войти"></a>
+
+        <a href="#" class="scroll_to_up hidden scroll_to_up_for_guest" id="scroll_to_top" title="Наверх"></a>
+    </div>
+    <div class="nav_tabs_content ">
+        
+        <div class="nav_tab hidden" id="menu_tab">
+            <div class="title">Разделы</div>
+            <form action="/search/" method="get" class="global_search_form">
+                <div>
+                    <input type="text" name="q" placeholder="Поиск" />
+                </div>
+            </form>
+            <div class="menu">
+                <a href="/posts/top/">Посты</a>
+                <a href="/hubs/">Хабы</a>
+                <a href="/companies/">Компании</a>
+                <a href="/users/">Пользователи</a>
+                <a href="http://toster.ru/?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo"    class="new_window">Q&A</a>
+                <a href="/sandbox/">Песочница</a>
+                
+
+            </div>
+
+            
+
+                    <div class="line"></div>
+                    <div class="title">Спецпроекты</div>
+                    <div class="menu">
+
+                    <a href="/lnk/9/">Yota Devices</a>
+
+                    <a href="/lnk/7/">М.Видео</a>
+
+                    <a href="/lnk/11/">Payler</a>
+                    </div>
+
+                
+        </div>
+
+        
+    </div>
+</div>
+      <div class="inner">
+        
+                
+        
+
+        	
+  <div class="content_left">
+  	
+
+
+
+
+
+    <div class="post_show">
+  	  
+  <div class="post shortcuts_item" id="post_203884">
+  	<div class="published">28 ноября 2013 в 09:19</div>
+    <h1 class="title">
+	    
+        <span class="post_title">Создание удобного OpenFileDialog для Android</span>
+      <span class="flag flag_tutorial" title="Обучающий материал">tutorial</span>
+			<a href="/info/help/karma/#recovery" class="flag flag_recovery" title="Реабилитационный пост от пользователя с отрицательной кармой">recovery mode</a>
+  	</h1>
+  	
+  	<div class="hubs">
+		<a href="http://habrahabr.ru/hub/android_dev/" class="hub " title="Вы не подписаны на этот хаб" >Разработка под Android</a><span class="profiled_hub" title="Профильный хаб">*</span>, 
+		<a href="http://habrahabr.ru/hub/android/" class="hub " title="Вы не подписаны на этот хаб" >Android</a><span class="profiled_hub" title="Профильный хаб">*</span>
+</div>
+
+  	
+  	<div class="content html_format">
+    	Наверное, как и многие разработчики под <b>Android</b>, столкнулся на днях с необходимостью реализовать в своем приложении выбор файла пользователем. Так как изначально в <b>Android</b> такого функционала нет, обратился к <a href="https://www.google.ru/">великому и ужасному</a>. Это показалось мне странным, но из вороха вопросов на <a href="http://stackoverflow.com/">stackoverflow</a> и небольшого числа отечественных форумов можно выделить всего три основных источника:<br/>
+<ol>
+<li> <a href="https://code.google.com/p/android-file-dialog/">Android File Dialog</a> – почти все ссылки из <b>stackoverflow</b> ведут сюда. В принципе, неплохое решение, но реализовано через отдельную <b>activity</b>, а хотелось чего-то в духе <b>OpenFileDialog</b>’а из <b>.Net</b>.</li>
+<li>В <a href="http://habrahabr.ru/post/109486/">данной статье</a> речь идет вообще об отдельном файл-менеджере, и почерпнуть какие-то идеи из неё не удалось.</li>
+<li>Идея же <a href="http://www.wtg.ru/products/onlinedev/031/">отсюда</a> очень понравилась, однако, как мне показалось реализовать все это можно несколько красивее.</li>
+</ol><br/>
+В результате, начав реализовывать своё решение, я столкнулся с некоторыми трудностями решать которые показалось очень интересно. А посему, решил описать в данной статье не просто готовое решение, а все шаги, которые к нему привели. Желающие пройти их вместе – <a name="habracut"></a><br/>
+Итак, приступим! В любой привычной среде (я использую <b>IntelliJ IDEA</b>) создадим новое приложение. На главной <b>activity</b> расположим одну единственную кнопку и напишем к ней, пока пустой, обработчик нажатия:<br/>
+<pre><code class="java">    public void OnOpenFileClick(View view) {
+    }
+</code></pre><br/>
+Создадим новый класс с конструктором:<br/>
+<pre><code class="java">import android.app.AlertDialog;
+import android.content.Context;
+
+public class OpenFileDialog extends AlertDialog.Builder {
+
+    public OpenFileDialog(Context context) {
+        super(context);
+        setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null);
+    }
+}
+</code></pre><br/>
+а в обработчике кнопки вызовем диалог:<br/>
+<pre><code class="java">OpenFileDialog fileDialog = new OpenFileDialog(this);
+fileDialog.show();
+</code></pre><br/>
+Кнопки показались, теперь надо бы и сами файлы найти. Начнем поиск с корня <b>sdcard</b>, для чего определим поле:<br/>
+<pre><code class="java">private String currentPath = Environment.getExternalStorageDirectory().getPath();
+</code></pre><br/>
+и реализуем следующий метод:<br/>
+<pre><code class="javascript">    private String[] getFiles(String directoryPath){
+        File directory = new File(directoryPath);
+        File[] files = directory.listFiles();
+        String[] result = new String[files.length];
+        for (int i = 0; i &lt; files.length; i++) {
+            result[i] = files[i].getName();
+        }
+        return result;
+    } 
+</code></pre><br/>
+(так как главное требование к классу – работать сразу у любого разработчика, без подключения дополнительных библиотек, — то никаких <a href="https://code.google.com/p/google-collections/">google-collections</a> использовать не будем, и с массивами приходится работать по старинке), а в конструкторе к вызову <b>setNegativeButton</b> добавим <b>.setItems(getFiles(currentPath), null)</b>.<br/>
+<div style="text-align:center;"><img src="http://habrastorage.org/storage3/91a/17f/703/91a17f7032ed216a7fc0d7cdb7936a5b.png" /></div><br/>
+Что же, неплохо, однако файлы не отсортированы. Реализуем для этого дела <b>Adapter</b> как внутренний класс, заменим <b>setItems</b> на <b>setAdapter</b> и немного перепишем <b>getFiles</b>:<br/>
+ <pre><code class="java">private class FileAdapter extends ArrayAdapter&lt;File&gt; {
+
+        public FileAdapter(Context context, List&lt;File&gt; files) {
+            super(context, android.R.layout.simple_list_item_1, files);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            TextView view = (TextView) super.getView(position, convertView, parent);
+            File file = getItem(position);
+            view.setText(file.getName());
+            return view;
+        }
+    }
+</code></pre><br/>
+<pre><code class="java">.setAdapter(new FileAdapter(context, getFiles(currentPath)), null)
+</code></pre><br/>
+<pre><code class="java">    private List&lt;File&gt; getFiles(String directoryPath){
+        File directory = new File(directoryPath);
+        List&lt;File&gt; fileList = Arrays.asList(directory.listFiles());
+        Collections.sort(fileList, new Comparator&lt;File&gt;() {
+            @Override
+            public int compare(File file, File file2) {
+                if (file.isDirectory() && file2.isFile())
+                    return -1;
+                else if (file.isFile() && file2.isDirectory())
+                    return 1;
+                else
+                    return file.getPath().compareTo(file2.getPath());
+            }
+        });
+        return fileList;
+    }
+</code></pre><br/>
+Еще лучше, но нам надо по клику на папке идти внутрь. Можно достучаться до встроенного <b>listview</b>, но я просто подменил его собственным (это потом пригодится). Плюс, изменения <b>adapter</b>’а внутри обработчика <b>listview</b> вызывало <b>exception</b>, и список файлов пришлось вынести в отдельное поле:<br/>
+<pre><code class="java">    private List&lt;File&gt; files = new ArrayList&lt;File&gt;();
+
+    public OpenFileDialog(Context context) {
+        super(context);
+        files.addAll(getFiles(currentPath));
+        ListView listView = createListView(context);
+        listView.setAdapter(new FileAdapter(context, files));
+        setView(listView)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null);
+    }
+
+    private void RebuildFiles(ArrayAdapter&lt;File&gt; adapter) {
+        files.clear();
+        files.addAll(getFiles(currentPath));
+        adapter.notifyDataSetChanged();
+    }
+
+    private ListView createListView(Context context) {
+        ListView listView = new ListView(context);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView&lt;?&gt; adapterView, View view, int index, long l) {
+                final ArrayAdapter&lt;File&gt; adapter = (FileAdapter) adapterView.getAdapter();
+                File file = adapter.getItem(index);
+                if (file.isDirectory()) {
+                    currentPath = file.getPath();
+                    RebuildFiles(adapter);
+                } 
+            }
+        });
+        return listView;
+    }
+</code></pre><br/>
+Отлично, вот только нажав на папку <b>Android</b> мы получаем список всего из одного каталога <b>data</b>, и наше окно тут же уменьшается в размере. <br/>
+<div style="text-align:center;"><img src="http://habrastorage.org/storage3/b95/ce0/a38/b95ce0a38a526eaba309238350309278.png" /></div><br/>
+Возможно это нормально, но мне это не понравилось, и я стал искать возможности размер сохранить. Единственный найденный мною вариант – это установка <b>setMinimumHeight</b>. Установка этого свойства для <b>listview</b> вызвала дополнительные проблемы, но они решились оберткой его в <b>LinearLayout</b>:<br/>
+<pre><code class="java">    public OpenFileDialog(Context context) {
+        super(context);
+        LinearLayout linearLayout = createMainLayout(context);
+        files.addAll(getFiles(currentPath));
+        ListView listView = createListView(context);
+        listView.setAdapter(new FileAdapter(context, files));
+        linearLayout.addView(listView);
+        setView(linearLayout)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null);
+    }
+
+    private LinearLayout createMainLayout(Context context) {
+        LinearLayout linearLayout = new LinearLayout(context);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setMinimumHeight(750);
+        return linearLayout;
+    }
+</code></pre><br/>
+Результат, все равно получился немного не таким, каким хотелось бы: при старте диалог развернут на весь экран, а после перехода в каталог <b>Android</b> – уменьшается до <b>750px</b>. Да еще и экраны разных устройств имеют разную высоту. Решим сразу обе этих проблемы, установив <b>setMinimumHeight</b> в максимально возможную для текущего экрана:<br/>
+<pre><code class="java">    private static Display getDefaultDisplay(Context context) {
+        return ((WindowManager)context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+    }
+
+    private static Point getScreenSize(Context context) {
+        Point screeSize = new Point();
+        getDefaultDisplay(context).getSize(screeSize);
+        return screeSize;
+    }
+
+    private static int getLinearLayoutMinHeight(Context context) {
+        return getScreenSize(context).y;
+    }
+
+    private LinearLayout createMainLayout(Context context) {
+        LinearLayout linearLayout = new LinearLayout(context);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setMinimumHeight(getLinearLayoutMinHeight(context));
+        return linearLayout;
+    }
+</code></pre><br/>
+Не нужно пугаться того, что мы устанавливаем в <b>setMinimumHeight</b> полный размер экрана, сама система уменьшит значение до максимально допустимого.<br/>
+Теперь появляется проблема понимания пользователя, в каком каталоге он сейчас находится, и возврата вверх. Давайте разберемся с первой. Вроде все легко — установить значение <b>title</b> в <b>currentPath</b> и менять его при изменении последнего. Добавим в конструктор и в метод <b>RebuildFiles</b> вызов <b>setTitle(currentPath)</b>.<br/>
+<div style="text-align:center;"><img src="http://habrastorage.org/storage3/cb6/7e6/738/cb67e6738a4fa7d615782f408448d014.png" /></div><br/>
+Вроде все хорошо. Перейдем в каталог <b>Android</b>:<br/>
+<div style="text-align:center;"><img src="http://habrastorage.org/storage3/9fe/906/a48/9fe906a48e620852e5fafd2aaffaa27a.png" /></div><br/>
+А нет – заголовок не изменился. Почему не срабатывает <b>setTitle</b> после показа диалога, документация молчит. Однако мы может это исправить, создав свой заголовок и подменив им стандартный:<br/>
+<pre><code class="java">private TextView title;
+
+public OpenFileDialog(Context context) {
+        super(context);
+        title = createTitle(context);
+        LinearLayout linearLayout = createMainLayout(context);
+        files.addAll(getFiles(currentPath));
+        ListView listView = createListView(context);
+        listView.setAdapter(new FileAdapter(context, files));
+        linearLayout.addView(listView);
+        setCustomTitle(title)
+                .setView(linearLayout)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null);
+    }
+
+    private  int getItemHeight(Context context) {
+        TypedValue value = new TypedValue();
+        DisplayMetrics metrics = new DisplayMetrics();
+        context.getTheme().resolveAttribute(android.R.attr.rowHeight, value, true);
+        getDefaultDisplay(context).getMetrics(metrics);
+        return (int)TypedValue.complexToDimension(value.data, metrics);
+    }
+
+    private TextView createTitle(Context context) {
+        TextView textView = new TextView(context);
+        textView.setTextAppearance(context, android.R.style.TextAppearance_DeviceDefault_DialogWindowTitle);
+        int itemHeight = getItemHeight(context);
+        textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, itemHeight));
+        textView.setMinHeight(itemHeight);
+        textView.setGravity(Gravity.CENTER_VERTICAL);
+        textView.setPadding(15, 0, 0, 0);
+        textView.setText(currentPath);
+        return textView;
+    }
+
+    private void RebuildFiles(ArrayAdapter&lt;File&gt; adapter) {
+        files.clear();
+        files.addAll(getFiles(currentPath));
+        adapter.notifyDataSetChanged();
+        title.setText(currentPath);
+    }
+</code></pre><br/>
+И снова не все ладно: если пройти достаточно далеко, то строка в заголовок влезать не будет<br/>
+<div style="text-align:center;"><img src="http://habrastorage.org/storage3/231/909/d9c/231909d9c533d7866ecc94b8e9392b0b.png" /></div><br/>
+Решение с установкой <b>setMaximumWidth</b> не верно, так как пользователь будет видеть только начало длинного пути. Не знаю, насколько верно мое решение, но я сделал так:<br/>
+<pre><code class="java">public int getTextWidth(String text, Paint paint) {
+        Rect bounds = new Rect();
+        paint.getTextBounds(text, 0, text.length(), bounds);
+        return bounds.left + bounds.width() + 80;
+    }
+
+    private void changeTitle() {
+        String titleText = currentPath;
+        int screenWidth = getScreenSize(getContext()).x;
+        int maxWidth = (int) (screenWidth * 0.99);
+        if (getTextWidth(titleText, title.getPaint()) &gt; maxWidth) {
+            while (getTextWidth(&quot;...&quot; + titleText, title.getPaint()) &gt; maxWidth)
+            {
+                int start = titleText.indexOf(&quot;/&quot;, 2);
+                if (start &gt; 0)
+                    titleText = titleText.substring(start);
+                else
+                    titleText = titleText.substring(2);
+            }
+            title.setText(&quot;...&quot; + titleText);
+        } else {
+            title.setText(titleText);
+        }
+    }
+</code></pre><br/>
+Решим теперь проблему с возвратом. Это достаточно легко, учитывая, что у нас есть <b>LinearLayout</b>. Добавим в него еще один <b>TextView</b> и немного отрефракторим код:<br/>
+<pre><code class="java">    private ListView listView;
+
+    public OpenFileDialog(Context context) {
+        super(context);
+        title = createTitle(context);
+        changeTitle();
+        LinearLayout linearLayout = createMainLayout(context);
+        linearLayout.addView(createBackItem(context));
+        files.addAll(getFiles(currentPath));
+        listView = createListView(context);
+        listView.setAdapter(new FileAdapter(context, files));
+        linearLayout.addView(listView);
+        setCustomTitle(title)
+                .setView(linearLayout)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null);
+    } 
+
+    private TextView createTextView(Context context, int style) {
+        TextView textView = new TextView(context);
+        textView.setTextAppearance(context, style);
+        int itemHeight = getItemHeight(context);
+        textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, itemHeight));
+        textView.setMinHeight(itemHeight);
+        textView.setGravity(Gravity.CENTER_VERTICAL);
+        textView.setPadding(15, 0, 0, 0);
+        return textView;
+    }
+
+    private TextView createTitle(Context context) {
+        TextView textView = createTextView(context, android.R.style.TextAppearance_DeviceDefault_DialogWindowTitle);
+        return textView;
+    }
+
+        private TextView createBackItem(Context context) {
+        TextView textView = createTextView(context, android.R.style.TextAppearance_DeviceDefault_Small);
+        Drawable drawable = getContext().getResources().getDrawable(android.R.drawable.ic_menu_directions);
+        drawable.setBounds(0, 0, 60, 60);
+        textView.setCompoundDrawables(drawable, null, null, null);
+        textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        textView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                File file = new File(currentPath);
+                File parentDirectory = file.getParentFile();
+                if (parentDirectory != null) {
+                    currentPath = parentDirectory.getPath();
+                    RebuildFiles(((FileAdapter) listView.getAdapter()));
+                }
+            }
+        });
+        return textView;
+    } 
+</code></pre><br/>
+<div style="text-align:center;"><img src="http://habrastorage.org/storage3/851/770/dd0/851770dd0402a0d2912ca75ba6828a56.png" /></div><br/>
+Возможность возвращаться на шаг вверх, может привести пользователя в каталоги, к которым ему доступ запрещен, поэтому изменим функцию <b>RebuildFiles</b>:<br/>
+ <pre><code class="java">    private void RebuildFiles(ArrayAdapter&lt;File&gt; adapter) {
+        try{
+            List&lt;File&gt; fileList = getFiles(currentPath);
+            files.clear();
+            files.addAll(fileList);
+            adapter.notifyDataSetChanged();
+            changeTitle();
+        } catch (NullPointerException e){
+            Toast.makeText(getContext(), android.R.string.unknownName, Toast.LENGTH_SHORT).show();
+        }
+    }
+</code></pre><br/>
+(cообщение пока не очень информативное, но вскоре мы добавим разработчику возможность исправить это).<br/>
+Ни один <b>OpenFileDialog</b> не обходится без фильтра. Добавим и его:<br/>
+<pre><code class="java">    private FilenameFilter filenameFilter;
+    public OpenFileDialog setFilter(final String filter) {
+        filenameFilter = new FilenameFilter() {
+
+            @Override
+            public boolean accept(File file, String fileName) {
+                File tempFile = new File(String.format(&quot;%s/%s&quot;, file.getPath(), fileName));
+                if (tempFile.isFile())
+                    return tempFile.getName().matches(filter);
+                return true;
+            }
+        };
+        return this;
+    }
+</code></pre><br/>
+<pre><code class="java">List&lt;File&gt; fileList = Arrays.asList(directory.listFiles(filenameFilter));
+</code></pre><br/>
+<pre><code class="java">new OpenFileDialog(this).setFilter(&quot;.*\\.txt&quot;);
+</code></pre><br/>
+Обратите внимание — фильтр принимает регулярное выражение. Казалось бы – все хорошо, но первая выборка файлов сработает в конструкторе, до присвоения фильтра. Перенесем её в переопределенный метод <b>show</b>:<br/>
+ <pre><code class="java">    public OpenFileDialog(Context context) {
+        super(context);
+        title = createTitle(context);
+        changeTitle();
+        LinearLayout linearLayout = createMainLayout(context);
+        linearLayout.addView(createBackItem(context));
+        listView = createListView(context);
+        linearLayout.addView(listView);
+        setCustomTitle(title)
+                .setView(linearLayout)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null);
+    }
+
+    @Override
+    public AlertDialog show() {
+        files.addAll(getFiles(currentPath));
+        listView.setAdapter(new FileAdapter(getContext(), files));
+        return super.show();
+    }
+</code></pre><br/>
+Осталось совсем чуть-чуть: вернуть выбранный файл. Опять же, я так и не понял зачем нужно устанавливать <b>CHOICE_MODE_SINGLE</b>, а потом все равно писать лишний код для подсветки выбранного элемента, когда он (код) и так будет работать без <b>CHOICE_MODE_SINGLE</b>, а потому обойдемся без него:<br/>
+<pre><code class="java">private int selectedIndex = -1;
+</code></pre><br/>
+<pre><code class="java">        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            TextView view = (TextView) super.getView(position, convertView, parent);
+            File file = getItem(position);
+            view.setText(file.getName());
+            if (selectedIndex == position)
+                view.setBackgroundColor(getContext().getResources().getColor(android.R.color.holo_blue_light));
+            else
+                view.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
+            return view;
+        }
+</code></pre><br/>
+<pre><code class="java">    private void RebuildFiles(ArrayAdapter&lt;File&gt; adapter) {
+        try{
+            List&lt;File&gt; fileList = getFiles(currentPath);
+            files.clear();
+            selectedIndex = -1;
+            files.addAll(fileList);
+            adapter.notifyDataSetChanged();
+            changeTitle();
+        } catch (NullPointerException e){
+            Toast.makeText(getContext(), android.R.string.unknownName, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private ListView createListView(Context context) {
+        ListView listView = new ListView(context);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView&lt;?&gt; adapterView, View view, int index, long l) {
+                final ArrayAdapter&lt;File&gt; adapter = (FileAdapter) adapterView.getAdapter();
+                File file = adapter.getItem(index);
+                if (file.isDirectory()) {
+                    currentPath = file.getPath();
+                    RebuildFiles(adapter);
+                } else {
+                    if (index != selectedIndex)
+                        selectedIndex = index;
+                    else
+                        selectedIndex = -1;
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
+        return listView;
+    }
+</code></pre><br/>
+И создадим интерфейс слушателя:<br/>
+ <pre><code class="java">    public interface OpenDialogListener{
+        public void OnSelectedFile(String fileName);
+    }
+    private OpenDialogListener listener;
+
+    public OpenFileDialog setOpenDialogListener(OpenDialogListener listener) {
+        this.listener = listener;
+        return this;
+    }
+</code></pre><br/>
+<pre><code class="java">…
+.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (selectedIndex &gt; -1 && listener != null) {
+                            listener.OnSelectedFile(listView.getItemAtPosition(selectedIndex).toString());
+                        }
+                    }
+                })
+…
+</code></pre><br/>
+Ну, и изменим вызов:<br/>
+<pre><code class="java">    OpenFileDialog fileDialog = new OpenFileDialog(this)
+                    .setFilter(&quot;.*\\.csv&quot;)
+                    .setOpenDialogListener(new OpenFileDialog.OpenDialogListener() {
+                        @Override
+                        public void OnSelectedFile(String fileName) {
+                            Toast.makeText(getApplicationContext(), fileName, Toast.LENGTH_LONG).show();
+                        }
+                    });
+            fileDialog.show();
+</code></pre><br/>
+Несколько улучшений напоследок: <br/>
+<pre><code class="java">    private Drawable folderIcon;
+    private Drawable fileIcon;
+    private String accessDeniedMessage;
+    public OpenFileDialog setFolderIcon(Drawable drawable){
+        this.folderIcon = drawable;
+        return this;
+    }
+
+    public OpenFileDialog setFileIcon(Drawable drawable){
+        this.fileIcon = drawable;
+        return this;
+    }
+
+    public OpenFileDialog setAccessDeniedMessage(String message) {
+        this.accessDeniedMessage = message;
+        return this;
+    }
+
+    private void RebuildFiles(ArrayAdapter&lt;File&gt; adapter) {
+        try{
+            List&lt;File&gt; fileList = getFiles(currentPath);
+            files.clear();
+            selectedIndex = -1;
+            files.addAll(fileList);
+            adapter.notifyDataSetChanged();
+            changeTitle();
+        } catch (NullPointerException e){
+            String message = getContext().getResources().getString(android.R.string.unknownName);
+            if (!accessDeniedMessage.equals(&quot;&quot;))
+                message = accessDeniedMessage;
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        }
+    }
+</code></pre><br/>
+<pre><code class="java">        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            TextView view = (TextView) super.getView(position, convertView, parent);
+            File file = getItem(position);
+            view.setText(file.getName());
+            if (file.isDirectory()) {
+                setDrawable(view, folderIcon);
+            } else {
+                setDrawable(view, fileIcon);
+                if (selectedIndex == position)
+                    view.setBackgroundColor(getContext().getResources().getColor(android.R.color.holo_blue_dark));
+                else
+                    view.setBackgroundColor(getContext().getResources().getColor(android.R.color.transparent));
+            }
+            return view;
+        }
+
+        private void setDrawable(TextView view, Drawable drawable) {
+            if (view != null){
+                if (drawable != null){
+                    drawable.setBounds(0, 0, 60, 60);
+                    view.setCompoundDrawables(drawable, null, null, null);
+                } else {
+                    view.setCompoundDrawables(null, null, null, null);
+                }
+            }
+        }
+</code></pre><br/>
+Осталось несколько проблем, которые я пока никак не смог решить, и был бы благодарен за любую помощь:<br/>
+<ol>
+<li>Подсветка нажатия на пункт «Вверх». Вроде решается через установку <b>setBackgroundResource</b> значения <b>android.R.drawable.list_selector_background</b>, но это стиль <b>android 2.x</b>, а не <b>holo</b>!</li>
+<li>Цвет выделения файла в зависимости от выбранной пользователем темы.</li>
+</ol><br/>
+Так же с удовольствием жду любых замечаний и предложений. Полный код <a href="https://github.com/Scogun/Android-OpenFileDialog">здесь</a>.<br/>
+ 
+    	<div class="clear"></div> 	
+  	</div>
+    
+<ul class="tags">
+	<li ><a href="http://habrahabr.ru/search/?q=%5B%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0%20%D0%BF%D0%BE%D0%B4%20android%5D&target_type=posts" rel="tag">разработка под android</a></li><li >, <a href="http://habrahabr.ru/search/?q=%5B%D0%B2%D1%8B%D0%B1%D0%BE%D1%80%20%D1%84%D0%B0%D0%B9%D0%BB%D0%BE%D0%B2%5D&target_type=posts" rel="tag">выбор файлов</a></li><li >, <a href="http://habrahabr.ru/search/?q=%5Bintellij%20idea%5D&target_type=posts" rel="tag">intellij idea</a></li>
+</ul>
+
+    <div class="infopanel_wrapper">
+	<div class="infopanel " id="infopanel_post_203884">
+	
+				<div class="voting   ">
+	
+						<span class="plus" title="Голосовать могут только зарегистрированные пользователи."></span>
+	
+					<div class="mark positive ">
+							<span class="score" title="Всего 13: &uarr;9 и &darr;4">+5</span>
+					</div>
+					
+						<span class="minus" title="Голосовать могут только зарегистрированные пользователи."></span>
+		
+				</div>
+	
+		<div class="pageviews" title="Просмотры поста">5944</div>
+			
+		<div class="favorite">
+				<a class="guest"	href="#" onclick="return false;" title="Только зарегистрированные пользователи могут добавлять посты в избранное"></a>
+		</div>
+		<div class="favs_count" title="Количество пользователей, добавивших пост в избранное">63</div>
+		
+		
+		
+	
+	
+	
+	
+				<div class="author">
+					<a title="Автор текста" href="http://habrahabr.ru/users/Scogun/" >Scogun</a>
+					<span class="rating" title="рейтинг пользователя">1,5</span>
+						<a href="https://plus.google.com/104442886953293617733/?rel=author" class="googleplus_profile">G+</a>
+				</div>
+		
+	
+	
+		
+			<div class="share">
+				<div class="twitter">
+					<a href="http://twitter.com/intent/tweet?text=%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5+%D1%83%D0%B4%D0%BE%D0%B1%D0%BD%D0%BE%D0%B3%D0%BE+OpenFileDialog+%D0%B4%D0%BB%D1%8F+Android+http://habr.ru/p/203884/+via+%40habrahabr+%23habr" title="Опубликовать ссылку в Twitter" target="_blank"></a>
+				</div>
+				<div class="vkontakte">
+					<a href="http://vk.com/share.php?url=http://habrahabr.ru/post/203884/" title="Опубликовать ссылку во ВКонтакте" onclick="window.open(this.href, 'Опубликовать ссылку во Вконтакте', 'width=800,height=300'); return false"></a>
+				</div>
+				<div class="facebook">
+					<a href="https://www.facebook.com/sharer/sharer.php?u=http://habrahabr.ru/post/203884/" title="Опубликовать ссылку в Facebook" onclick="window.open(this.href, 'Опубликовать ссылку в Facebook', 'width=640,height=436,toolbar=0,status=0'); return false"></a>
+				</div>
+				<div class="googleplus">
+					<a href="https://plus.google.com/share?url=http://habrahabr.ru/post/203884/" title="Опубликовать ссылку в Google Plus" onclick="window.open(this.href, 'Опубликовать ссылку в Google Plus', 'width=800,height=300'); return false"></a>
+				</div>
+			</div>
+	
+	</div>
+	<div class="clear"></div>
+</div>
+
+
+
+
+    
+    
+	</div>
+
+    </div>
+
+  	    
+    <div id="adriver_banner_132032996"></div>  
+
+  <script type="text/javascript">  
+      function show_inner_banner_block(name, url){
+          if( typeof(name) !== 'undefined'){
+              $.get('/html/'+name+'/1402935303/', function(html){
+                  $('#adriver_banner_132032996').html(html);
+                  $('.'+name+'_inner_banner').removeClass('hidden');
+                  if( typeof(url) !== 'undefined'){
+                      $('.'+name+'_inner_banner .block_url').attr('href', url);
+                  }
+              })
+          }
+      }
+
+        $(function(){
+            var keyword = '';
+            if (typeof crtg_content !== 'undefined' && crtg_content) { keyword = crtg_content; }
+            var custom = { 4:ar_duo1 };
+                custom[1] = 'android_dev';
+                custom[2] = 'android';
+
+            /* Антоша не удаляй это условие блеать! Как я тестить буду? */
+            //if (true)
+            //    show_inner_banner_block('megafon6');
+            //else
+                new adriver("adriver_banner_132032996", {sid: 176776, bt: 52, bn: 3, custom: custom, keyword: keyword});
+        });
+    </script>
+    
+
+
+  	
+  		<div class="comments_list " id="comments">
+
+  <h2 class="title ">Комментарии (<span id="comments_count">16</span>)
+  
+  
+  </h2>
+
+    <div class="comment_item" id="comment_7036184" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="7036184">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_7036184" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 2: &uarr;2 и &darr;0">+2</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/sinty/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/520/41c/cae/52041ccae1e5295977568b69a9d08c5f_small.png" alt="" /></a>
+            <a href="http://habrahabr.ru/users/sinty/" class="username">sinty</a><span class="comma">,</span>
+            <time>28 ноября 2013 в 10:26</time>
+
+            <a href="#comment_7036184" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Круто было-бы сделать из полного пути <a href="http://ru.wikipedia.org/wiki/%D0%9D%D0%B0%D0%B2%D0%B8%D0%B3%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%BD%D0%B0%D1%8F_%D1%86%D0%B5%D0%BF%D0%BE%D1%87%D0%BA%D0%B0">«хлебные крошки»</a>.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_7036184">
+        <div class="comment_item" id="comment_7036262" >
+
+    <span class="parent_id" data-parent_id="7036184"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="7036262">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_7036262" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 2: &uarr;1 и &darr;1">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/Scogun/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/856/5a6/71d/8565a671df4a3816059deb92d4d54c8c_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/Scogun/" class="username">Scogun</a><span class="comma">,</span>
+            <time>28 ноября 2013 в 10:45<span class="time_changed"> (комментарий был изменён)</span></time>
+
+            <a href="#comment_7036262" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="7036262" data-parent_id="7036184" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_7036184" data-id="7036262" data-parent_id="7036184" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Мысль интересная! Для длинных путей, можно сделать горизонтальную прокрутку. <br/>
+Даже уже вижу два пути решения: попроще, быстрее, но некрасиво, и второй — чуть заморочено. Попытаюсь сначала вторым способом, но если не выйдет – сделаю первым.<br/>
+<br/>
+P.S. Плюсануть, к сожалению, не могу!
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_7036262">
+        <div class="comment_item" id="comment_7036860" >
+
+    <span class="parent_id" data-parent_id="7036262"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="7036860">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_7036860" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/Scogun/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/856/5a6/71d/8565a671df4a3816059deb92d4d54c8c_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/Scogun/" class="username">Scogun</a><span class="comma">,</span>
+            <time>28 ноября 2013 в 13:01</time>
+
+            <a href="#comment_7036860" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="7036860" data-parent_id="7036262" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_7036262" data-id="7036860" data-parent_id="7036262" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Для кого-то особенно рьяного: я не просил прибавить мне кармы, я констатировал факт!
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_7036860">
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    <div class="comment_item" id="comment_7036224" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="7036224">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_7036224" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/jimpanzer/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/jimpanzer/" class="username">jimpanzer</a><span class="comma">,</span>
+            <time>28 ноября 2013 в 10:37</time>
+
+            <a href="#comment_7036224" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Иногда самому писать, просто нет времени. Я использую либо установленные файловые менеджеры, либо вот эту либу (уже все зависит от тз)<br/>
+<br/>
+aFileChooser — Android File Chooser<br/>
+&quot;… Because many Android devices don't have stock File Explorers, the developer must often instruct the user to install one, or build one, themselves. aFileChooser solves this issue.&quot;<br/>
+<br/>
+<a href="https://github.com/iPaulPro/aFileChooser">github.com/iPaulPro/aFileChooser</a>
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_7036224">
+        <div class="comment_item" id="comment_7036272" >
+
+    <span class="parent_id" data-parent_id="7036224"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="7036272">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_7036272" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/Scogun/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/856/5a6/71d/8565a671df4a3816059deb92d4d54c8c_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/Scogun/" class="username">Scogun</a><span class="comma">,</span>
+            <time>28 ноября 2013 в 10:50</time>
+
+            <a href="#comment_7036272" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="7036272" data-parent_id="7036224" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_7036224" data-id="7036272" data-parent_id="7036224" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Спасибо за еще одно решение! Но, как и в <a href="https://code.google.com/p/android-file-dialog/"><b>Android File Dialog</b></a> сделано через отдельную <b>activity</b>, а хочется, чтобы и вызов и результат были в одном месте.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_7036272">
+    </div>
+</div>
+
+    </div>
+</div>
+
+    <div class="comment_item" id="comment_7036286" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="7036286">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_7036286" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark positive ">
+                    <span class="score" title="Всего 2: &uarr;2 и &darr;0">+2</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/WraithOW/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/b6b/cff/3a8/b6bcff3a81843128fc9a4b3a765126f8_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/WraithOW/" class="username">WraithOW</a><span class="comma">,</span>
+            <time>28 ноября 2013 в 10:53</time>
+
+            <a href="#comment_7036286" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            <blockquote>Цвет выделения файла в зависимости от выбранной пользователем темы.</blockquote><br/>
+Вместо ручной установки цвета фона в <code>getView()</code> используйте <code>setSelected()</code>:<br/>
+<pre><code class="java">view.setSelected(selectedIndex == position);
+</code></pre><br/>
+Кликать по заголовку для того, чтобы перейти на уровень вверх — ИМХО не лучшее решение, пользователь вряд ли догадается (я вот только из кода понял, как это сделать). Лучше просто добавлять в начало списка элемент с тремя точками в названии, или стрелку вверх, <a href="http://habrastorage.org/storage3/30b/522/ae9/30b522ae9f78c6615fc118e885377f81.png">как в тотале</a>.<br/>
+<br/>
+<blockquote>Опять же, я так и не понял зачем нужно устанавливать CHOICE_MODE_SINGLE</blockquote><br/>
+Он нужен для того, чтобы пользоваться встроенным фукнционалом выделения, а не вручную подсвечивать элементы в <code>getView()</code>. Например, через <code>ListView.setItemChecked()</code>.<br/>
+<br/>
+И да, использовать «сырые» диалоги — не лучший, на мой взгляд подход. Посмотрите в сторону <a href="http://developer.android.com/intl/ru/reference/android/app/DialogFragment.html">DialogFragment</a>.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_7036286">
+        <div class="comment_item" id="comment_7036344" >
+
+    <span class="parent_id" data-parent_id="7036286"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="7036344">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_7036344" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/Scogun/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/856/5a6/71d/8565a671df4a3816059deb92d4d54c8c_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/Scogun/" class="username">Scogun</a><span class="comma">,</span>
+            <time>28 ноября 2013 в 11:07</time>
+
+            <a href="#comment_7036344" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="7036344" data-parent_id="7036286" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_7036286" data-id="7036344" data-parent_id="7036286" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            <blockquote>Кликать по заголовку для того, чтобы перейти на уровень вверх — ИМХО не лучшее решение, пользователь вряд ли догадается (я вот только из кода понял, как это сделать). Лучше просто добавлять в начало списка элемент с тремя точками в названии, или стрелку вверх, как в тотале.</blockquote><br/>
+Кликать надо не по заголовку, а по <b>TextView</b> расположенном над <b>ListView</b>. Получается «как в тотале» и он (<b>TextView</b>) всегда на виду не зависимо от прокрутки в списке (добавил <b>screenshot</b> для наглядности).<br/>
+Спасибо за разъяснения и совет! Посмотрю в сторону <a href="http://developer.android.com/intl/ru/reference/android/app/DialogFragment.html"><b>DialogFragment</b></a>.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_7036344">
+        <div class="comment_item" id="comment_7036446" >
+
+    <span class="parent_id" data-parent_id="7036344"></span>
+    <div class="comment_body">
+        <div class="info  " rel="7036446">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_7036446" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/WraithOW/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/b6b/cff/3a8/b6bcff3a81843128fc9a4b3a765126f8_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/WraithOW/" class="username">WraithOW</a><span class="comma">,</span>
+            <time>28 ноября 2013 в 11:32</time>
+
+            <a href="#comment_7036446" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="7036446" data-parent_id="7036344" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_7036344" data-id="7036446" data-parent_id="7036344" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            <code>TextView</code> — это элемент отображения данных, но никак не ввода и не управления. Если хотите держать пункт «вверх» отдельно от списка — используйте кнопки.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_7036446">
+        <div class="comment_item" id="comment_7036536" >
+
+    <span class="parent_id" data-parent_id="7036446"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="7036536">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_7036536" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/Scogun/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/856/5a6/71d/8565a671df4a3816059deb92d4d54c8c_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/Scogun/" class="username">Scogun</a><span class="comma">,</span>
+            <time>28 ноября 2013 в 11:55</time>
+
+            <a href="#comment_7036536" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="7036536" data-parent_id="7036446" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_7036446" data-id="7036536" data-parent_id="7036446" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Да, спасибо: переделал – стало лучше. Выложу новую версию, когда доделаю все запланированные изменения.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_7036536">
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+        <div class="comment_item" id="comment_7036358" >
+
+    <span class="parent_id" data-parent_id="7036286"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="7036358">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_7036358" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/Scogun/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/856/5a6/71d/8565a671df4a3816059deb92d4d54c8c_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/Scogun/" class="username">Scogun</a><span class="comma">,</span>
+            <time>28 ноября 2013 в 11:11</time>
+
+            <a href="#comment_7036358" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="7036358" data-parent_id="7036286" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_7036286" data-id="7036358" data-parent_id="7036286" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Хм, <b>setSelected</b> не устанавливает цвет подсветки!
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_7036358">
+    </div>
+</div>
+
+    </div>
+</div>
+
+    <div class="comment_item" id="comment_7036400" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="7036400">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_7036400" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/dmitryustimov/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/915/e32/a6a/915e32a6ab110b35480247d20d972031_small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/dmitryustimov/" class="username">dmitryustimov</a><span class="comma">,</span>
+            <time>28 ноября 2013 в 11:21</time>
+
+            <a href="#comment_7036400" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            <a href="http://habrahabr.ru/users/scogun/" class="user_link">Scogun</a>, на мой взгляд, Вы зря отказываетесь от Activity — так вы получите больше свободного места на устройствах с маленьким экраном, если захотите отображать не только название папки/файла, но и дополнительную информацию о файле.<br/>
+<br/>
+Под спойлерами пример того, что было у меня и как я это улучшил. Код во многом соответствует коду, который Вы привели.<br/>
+<div class="spoiler"><b class="spoiler_title">Было (PNG, 40КБ)</b><div class="spoiler_text"><img src="http://habrastorage.org/getpro/habr/comment_images/59f/b31/fe9/59fb31fe9dc1daba516ff6c456f7559d.png" alt="image"/></div></div><br/>
+<div class="spoiler"><b class="spoiler_title">Стало (PNG, 42КБ)</b><div class="spoiler_text"><img src="http://habrastorage.org/getpro/habr/comment_images/fa9/623/747/fa9623747d92110b0fadbc781795c670.png" alt="image"/></div></div><br/>
+<br/>
+<font color="gray">Прошу прощения за сторонний хостинг картинок, что-то странное творится с HabraStorage</font>
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_7036400">
+    </div>
+</div>
+
+    <div class="comment_item" id="comment_7036464" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="7036464">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_7036464" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/WGH/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/WGH/" class="username">WGH</a><span class="comma">,</span>
+            <time>28 ноября 2013 в 11:38</time>
+
+            <a href="#comment_7036464" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            А вариант <a href="http://www.openintents.org/en/filemanager">OI File Manager</a> не рассматривался?
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_7036464">
+        <div class="comment_item" id="comment_7036480" >
+
+    <span class="parent_id" data-parent_id="7036464"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="7036480">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_7036480" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/Scogun/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/856/5a6/71d/8565a671df4a3816059deb92d4d54c8c_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/Scogun/" class="username">Scogun</a><span class="comma">,</span>
+            <time>28 ноября 2013 в 11:45</time>
+
+            <a href="#comment_7036480" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="7036480" data-parent_id="7036464" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_7036464" data-id="7036480" data-parent_id="7036464" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Не находил его при поиске, и опять же: отдельная библиотека и вызов через <b>activity</b>. Но все равно спасибо за информацию!
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_7036480">
+        <div class="comment_item" id="comment_7036652" >
+
+    <span class="parent_id" data-parent_id="7036480"></span>
+    <div class="comment_body">
+        <div class="info  " rel="7036652">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_7036652" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/WGH/" class="avatar"><img src="http://habrahabr.ru/i/avatars/stub-user-small.gif" alt="" /></a>
+            <a href="http://habrahabr.ru/users/WGH/" class="username">WGH</a><span class="comma">,</span>
+            <time>28 ноября 2013 в 12:16</time>
+
+            <a href="#comment_7036652" class="link_to_comment">#</a>
+                <div class="show_tree" data-id="7036652" data-parent_id="7036480" title="Показать ветку комментариев">&#8629;</div>
+                <a href="#comment_7036480" data-id="7036652" data-parent_id="7036480" class="to_parent">&uarr;</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Зато пользователь при желании сможет поставить себе любое приложение для выбора файлов.
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_7036652">
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+    <div class="comment_item" id="comment_7036910" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  " rel="7036910">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_7036910" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/tehnolog/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/dd5/1a8/129/dd51a8129e3f513f46d1aff9973100c0_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/tehnolog/" class="username">tehnolog</a><span class="comma">,</span>
+            <time>28 ноября 2013 в 13:12</time>
+
+            <a href="#comment_7036910" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            <blockquote>Как достучаться до встроенного listview я не нашел</blockquote><br/>
+Вообще-то у ListActivity есть метод getListView()
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_7036910">
+    </div>
+</div>
+
+    <div class="comment_item" id="comment_7036988" >
+
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment_body">
+        <div class="info  is_topic_starter  " rel="7036988">
+            <div class="folding-dot-holder"><div class="folding-dot"></div></div>
+            <div id="voting_7036988" class="voting   ">
+                <span class="minus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <span class="plus" title="Голосовать могут только зарегистрированные пользователи"></span>
+                <div class="mark  ">
+                    <span class="score" title="Всего 0: &uarr;0 и &darr;0">0</span>
+                </div>
+            </div>
+            <a href="http://habrahabr.ru/users/Scogun/" class="avatar"><img src="//habrastorage.org/getpro/habr/avatars/856/5a6/71d/8565a671df4a3816059deb92d4d54c8c_small.jpg" alt="" /></a>
+            <a href="http://habrahabr.ru/users/Scogun/" class="username">Scogun</a><span class="comma">,</span>
+            <time>28 ноября 2013 в 13:31</time>
+
+            <a href="#comment_7036988" class="link_to_comment">#</a>
+            <span class="to_chidren"></span>
+            <div class="clear"></div>
+        </div>
+        <div class="message html_format ">
+            Да, в переопределенном show его таким образом действительно можно получить, но нам все равно нужен LinearLayout чтобы еще разместить и кнопку «Назад». Немного перефразирую текст. Спасибо!
+        </div>
+        <div class="reply_form_placeholder"></div>
+        <div class="reply">
+            
+        </div>
+    </div>
+
+    <div class="reply_comments" id="reply_comments_7036988">
+    </div>
+</div>
+
+</div>
+
+  					<p class="for_users_only_msg">Только зарегистрированные пользователи могут оставлять комментарии.<br><a href="https://habrahabr.ru/auth/login/">Войдите</a>, пожалуйста.</p>
+
+
+  	
+<form action="/json/favorites/" method="post" id="edit_tags_form" class="hidden">
+  <input type="hidden" name="action" value="add" />
+  <input type="hidden" name="ti" value="0" />
+  <input type="hidden" name="tt" value="0" />
+  <label>Пометьте топик понятными вам метками, если хотите</label>
+  <input type="text" name="tags_string" class="tags_string" />
+  <div class="description">Метки лучше разделять запятой. Например: <i>общение, социальные сети, myspace.com, подростки, мердок</i></div>
+  <input type="submit" value="Сохранить" class="submit" /> или <a href="#" class="close" onclick="return close_edit_tags()">закрыть</a>
+</form>
+    
+    
+
+  </div>
+  <div class="sidebar_right">
+      	<div class="banner_300x100">
+		<!--  AdRiver code START. Type:AjaxJS Site: habrahabr PZ: 0 BN: 5 -->
+		<div id="adriver_banner_2100516578"></div>
+		<script type="text/javascript">
+			$(function(){
+				var keyword = '';
+				if (typeof crtg_content !== 'undefined' && crtg_content) { keyword = crtg_content; }
+
+				var custom = {4:ar_duo1};
+					custom[1] = 'android_dev';
+					custom[2] = 'android';
+
+				new adriver("adriver_banner_2100516578", {sid: 176776, bt: 52, bn: 5, custom: custom, keyword: keyword});
+			}());
+		</script>
+	</div>
+
+
+  			<div class="banner_300x500">
+		<div id="adriver_banner_1863387959"></div>
+		<script type="text/javascript">
+            function show_bn1_block(name, url){
+                console.log('show' + name);
+                if( typeof(name) !== 'undefined'){
+                    $.get('/html/'+name+'/1402935303/', function(html){
+                        $('#adriver_banner_1863387959').html(html);
+                        if( typeof(url) !== 'undefined'){
+                            $('.'+name+'_inner_banner .block_url').attr('href', url);
+                        }
+                    })
+                }
+            }
+
+			$(function(){
+
+				var keyword = '';
+				if (typeof crtg_content !== 'undefined' && crtg_content) { keyword = crtg_content; }
+
+				var custom = {4:ar_duo1};
+					custom[1] = 'android_dev';
+					custom[2] = 'android';
+
+                 new adriver("adriver_banner_1863387959", {sid: 176776, bt: 52, bn: 1, custom: custom, keyword: keyword});
+			}());
+		</script>
+	</div>
+
+  		
+  		
+<div class="block daily_best_posts">
+  <div class="title">Лучшее <sup>за 24 часа</sup></div>
+  <div class="posts_list">
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/226325/" class="post_name">Интересная задачка для интервью, карринг и частичное применение функции</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/226375/" class="post_name">Вышла OpenXcom 1.0 — свободная версия X-COM</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/226347/" class="post_name">Про котиков, собак, машинное обучение и deep learning</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/226257/" class="post_name">Двухпанельный веб-файл менеджер Cloud Commander</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/226337/" class="post_name">Поиграем в эволюцию? Генетические алгоритмы в скринсейвере</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/company/yandex/blog/226381/" class="post_name">Яндекс покупает Auto.ru</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/226411/" class="post_name">Самая большая чёрная дыра в известной Вселенной</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/226339/" class="post_name">Как собрать электробайк за семь дней</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/post/226429/" class="post_name">Любительская астрономия: взгляд изнутри сообщества на хобби и грабли новичков</a>
+      </div>
+      <div class="post_item">
+        
+				
+				
+				
+				
+				
+
+        <a href="http://habrahabr.ru/company/infopulse/blog/226427/" class="post_name">Эволюция веб-фреймворков Microsoft. ASP.NET vNext</a>
+      </div>
+  </div>
+  <div class="all"><a href="/top/">все лучшие</a></div>
+</div>
+
+  	  
+
+
+<div class="block similar_posts">
+
+	<div class="title">Похожие посты</div>
+  <div class="posts_list">
+    	<div class="post_item">
+    				<a class="post_name" href="/post/205380/">Пользователи Delphi о мобильной разработке под Android</a>
+    				<span class="when"> 9 декабря 2013 в 17:16</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" href="/post/200776/">Про мой опыт разработки под Android или тренируемся на Крестиках-Ноликах</a>
+    				<span class="when"> 4 ноября 2013 в 19:48</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" href="/post/194084/">JetBrains — разработка под Android для лентяев</a>
+    				<span class="when">17 сентября 2013 в 14:09</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" href="/post/192434/">Разработка JSF приложений при помощи IntelliJ Idea. Часть 2: Разработка простого приложения</a>
+    				<span class="when"> 3 сентября 2013 в 21:53</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" href="/post/207924/">Intellij IDEA: Oracle Cloud Integration</a>
+    				<span class="when">31 декабря 2013 в 15:23</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" href="/post/207384/">Разработка под Android в NetBeans IDE без плагинов. Часть 1</a>
+    				<span class="when"> 5 января в 00:01</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" href="/post/214683/">Обновлены средства разработки под android, поддержка java 7</a>
+    				<span class="when"> 5 марта в 01:43</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" href="/post/214531/">JavaScript to APK. Подводные камни разработки под Android для тех, кого задолбал PhoneGap. Построение мостов из Java в JavaScript</a>
+    				<span class="when"> 4 марта в 15:09</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" href="/post/210926/">Разработка под Android в NetBeans IDE без плагинов. Часть 2</a>
+    				<span class="when"> 1 февраля в 05:25</span>
+      </div>
+    	<div class="post_item">
+    				<a class="post_name" href="/post/224921/">DevConf 2014: Разработка под Android Wear (Google Glass, фитнес-трекеры, умные часы)</a>
+    				<span class="when"> 2 июня в 14:35</span>
+      </div>
+  </div>			
+</div>
+
+
+	
+  	  
+<div class="block similar_questions">
+	<div class="title">Вопросы по теме</div>
+
+	<div class="posts_list">
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/102999?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Проблема GUI билдера в IntelliJ Idea</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/101903?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как настроить отображение комментариев после длинного блока кода в IntelliJ Idea?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/97303?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как настроить Аpache tomcat в intellij idea?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/96925?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как написать программу для Windows на Java в Intellij Idea?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/95471?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как в IntelliJ IDEA понять, что фоновая компиляция закончилась?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/94973?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Проблема подключения logging.properties в IDEA</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/93439?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">На чем написан GUI у IntelliJ IDEA 13.1?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/90531?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как подключить библиотеку к проекту в Intellij IDEA?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/86810?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как в Java прочитать *.properties файлы с русским текстом?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/84734?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как добавить Jboss AS 7 как зависимость в Gradle?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/82066?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Правильная организация структуры проекта на java и использование gradle как систему сборки</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/76764?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Почему не запускается Android-эмулятор?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/74068?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как подключить статические файлы типа css-таблиц или js-скриптов к jsp-странице в среде netbeans?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/72694?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Можно ли задать общую цветовую гамму, т.е. одинаковый фон, как для окна кода, так и для панелей самой IDE?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/69888?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Как настроить форматирование кода в JetBrains intellij IDEA?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/68936?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Почему idea 11 в ubuntu 12.04 часто перестает реагировать на клики?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/67384?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Настройка IntelliJ IDEA с плагином для Erlang под Windows (7)</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/65896?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Возможно ли при публикации проекта Intellij Idea на Github каким-то образом отметить строки или кусок кода, которые нужно пропустить при публикации?</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/61674?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Intellij IDEA break on exception</a>
+		</div>
+    	<div class="post_item">
+    	    <a class="post_name" href="https://toster.ru/q/61160?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Возможно ли сделать такое отображаение шрифта под Windows+phpStorm?</a>
+		</div>
+  </div>			
+		
+</div>
+
+  		
+  		
+
+	<div class="block live_broadcast">
+		<div class="title">Что обсуждают? </div>
+
+		<div class="live_broadcast_activity">
+				<div class="posts_list">
+							<div class="post_item">
+								
+								<a href="/post/226023#comments" class="post_name">Просто UBANK в кармане: как это было сложно</a>&nbsp;<span class="count">1</span>
+							</div>
+							<div class="post_item">
+								
+								<a href="/post/226375#comments" class="post_name">Вышла OpenXcom 1.0 — свободная версия X-COM</a>&nbsp;<span class="count">54</span>
+							</div>
+							<div class="post_item">
+								
+								<a href="/post/221523#comments" class="post_name">Почему я люблю Qt и вы все тоже должны его любить</a>&nbsp;<span class="count">177</span>
+							</div>
+							<div class="post_item">
+								
+								<a href="/post/225607#comments" class="post_name">Безопасность покупателя в рознице: что надо знать лично вам</a>&nbsp;<span class="count">12</span>
+							</div>
+							<div class="post_item">
+								
+								<a href="/post/226437#comments" class="post_name">Nissan и BMW присоединятся к планам Tesla по развитию электрозаправок</a>&nbsp;<span class="count">39</span>
+							</div>
+							<div class="post_item">
+								
+								<a href="/post/225599#comments" class="post_name">Тест Тьюринга пройден (на детском уровне сложности)</a>&nbsp;<span class="count">232</span>
+							</div>
+							<div class="post_item">
+								
+								<a href="/post/226327#comments" class="post_name">Что должен знать «PHP Junior Developer без опыта работы»?</a>&nbsp;<span class="count">72</span>
+							</div>
+							<div class="post_item">
+								
+								<a href="/post/226257#comments" class="post_name">Двухпанельный веб-файл менеджер Cloud Commander</a>&nbsp;<span class="count">42</span>
+							</div>
+							<div class="post_item">
+								
+								<a href="/post/226325#comments" class="post_name">Интересная задачка для интервью, карринг и частичное применение функции</a>&nbsp;<span class="count">48</span>
+							</div>
+							<div class="post_item">
+								
+								<a href="/post/226461#comments" class="post_name">Как стать хорошим программистом?</a>&nbsp;<span class="count">16</span>
+							</div>
+				</div>
+				<div class="all"><a href="/posts/">все посты</a></div>
+		</div>
+
+	</div>
+  
+  		<!--  AdRiver code START. Type:AjaxJS Site: habrahabr PZ: 0 BN: 2 -->
+
+<div id="adriver_banner_480931290" class="adbanner"></div>
+
+
+<script type="text/javascript">
+    function show_bn2_block(name, url){
+        if( typeof(name) !== 'undefined'){
+            $.get('/html/'+name+'/1402935303/', function(html){
+                $('#adriver_banner_480931290').html(html);
+                if( typeof(url) !== 'undefined'){
+                    $('.'+name+'_inner_banner .block_url').attr('href', url);
+                }
+            })
+        }
+    }
+
+    $(function(){
+
+        var check_scroll_position = function() {
+            var height = $(window).height();
+            var scrollTop = $(window).scrollTop();
+            var scrollBottom = $(window).scrollTop() + height;
+            var blockTop = $('#adriver_banner_480931290').position().top;
+            var show = scrollTop < blockTop && blockTop < scrollBottom;
+            //console.log('scroll', scrollTop, blockTop, scrollBottom, show)
+            if( show ){
+                //console.log('show bn2');
+                $( window ).off('scroll', check_scroll_position);
+                $( window ).trigger('show_bn2');
+            }
+        };
+        $( window ).on('scroll', check_scroll_position);
+
+        $( window ).on('show_bn2', function(){
+            var keyword = '';
+            if (typeof crtg_content !== 'undefined' && crtg_content) { keyword = crtg_content; }
+            var custom = {4:ar_duo1};
+            custom[1] = 'android_dev';
+            custom[2] = 'android';
+            new adriver("adriver_banner_480931290", {sid: 176776, bt: 52, bn: 2, custom: custom, keyword: keyword});
+        });
+    });
+    </script>
+<!--  AdRiver code END  -->
+
+  		
+<div class="block best_company">
+
+		<div class="title">Компания дня <img src="/images/bg_cicle_help.png" title="
+Компания, чей пост набрал максимальное количество баллов<br>
+среди всех опубликованных в корпоративных блогах постах за <br>
+прошедшие сутки. Учитываются посты, для которых истек срок голосования <br>(3 дня с момента публикации)." class="help-tip"></div>
+
+		<div class="company_info">
+			<div class="name">
+			 <img class="favicon" src="//habrastorage.org/getpro/habr/companies/962/805/082/962805082f637b91dbf30ebb10ef3c33_small.jpg" alt="Mail.Ru Group" height="16" width="16" />
+			 <div class="company_name"><a href="http://habrahabr.ru/company/mailru/" class="title">Mail.Ru Group</a></div>
+			</div>
+
+			<p>Последний пост:
+				<a href="http://habrahabr.ru/company/mailru/blog/226015/">Карьерное исследование в IT: студенты хотят работать в крупных компаниях</a>
+			</p>
+
+			<div class="buttons">
+  			<div id="fans_count">3539 подписчиков</div>
+			</div>
+		</div>
+
+	</div>
+
+
+  		
+
+  		
+	<div class="block new_vacanies">
+  <a href="http://brainstorage.me/jobs?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo" class="title">Brainstorage</a>
+  <div class="vacancies">
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/18743?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Разработчик iOS</a>
+		</div>
+		<div class="job_item marked">
+			<a href="http://brainstorage.me/jobs/19929?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Product Manager</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/19335?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Разработчик мобильных приложений для Ios</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/17789?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">iOS-разработчик</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/17803?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">PHP-программист</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/14417?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Mobile iOS Programmer</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/19869?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">iOS разработчик</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/19871?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Android разработчик</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/19873?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Windows 8 / Windows Phone 8 разработчик</a>
+		</div>
+		<div class="job_item ">
+			<a href="http://brainstorage.me/jobs/19859?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">iOS разработчик</a>
+		</div>
+  </div>
+  <div class="all"><a href="http://brainstorage.me/jobs?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">все вакансии</a></div>
+</div>
+
+  		
+	<div class="block freelansim">
+	  <a href="http://freelansim.ru?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo" class="title"></a>
+	  <div class="tasks">
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/72551?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Yii 2.0 — поддержка и дальнейшее развитие проекта</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/72549?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Магазин на shop-script 5, доработки</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/72541?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Доделки проекта на Python/flask</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/72547?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Сделать сайт для регистрации ООО</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/72545?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Доработка Prestashop 1.6</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/72543?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Написать функционал сайта - монитора онлайн обменников</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/72507?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Отрисовать типовые страницы книги по отсканированным фотографиям</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/72535?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Верстка лендинга</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/72531?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Нарисовать много картинок</a>
+				</div>
+				<div class="task ">
+					<a href="http://freelansim.ru/tasks/72529?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">Нужны  верстальщики веб-страниц (и программисты)</a>
+				</div>
+
+	  </div>
+	  <div class="all"><a href="http://freelansim.ru/tasks?utm_source=tm_habrahabr&utm_medium=tm_block&utm_campaign=tm_promo">все заказы</a></div>
+	</div>
+
+  		
+  		
+  		
+  </div>
+  <div class="clear"></div>
+
+  <script>
+    // hubs to GA
+      ga('send', 'event', 'Post_view', 'android_dev (Разработка под Android)',  window.location.pathname + window.location.search);
+      ga('send', 'event', 'Post_view', 'android (Android)',  window.location.pathname + window.location.search);
+  </script>
+
+
+
+        	
+	<div class="rotated_posts">
+			<div class="rotated_post ">
+				<a href="http://habrahabr.ru/company/abbyy/blog/225215/" class="grey">Распознавание текста в ABBYY FineReader</a>
+			</div>
+			<div class="rotated_post ">
+				<a href="http://habrahabr.ru/post/220775/" class="grey">Reedy – Скорочтение, которое действительно можно использовать</a>
+			</div>
+			<div class="rotated_post last">
+				<a href="http://habrahabr.ru/post/220445/" class="grey">PrintBox3d. 3d-принтер по-русски</a>
+			</div>
+		<div class="clear"></div>
+	</div>
+
+
+        <div class="clear"></div>
+
+        <div class="footer_panel">
+          <div id="footer">
+	<dl>
+		<dd><a href="https://habrahabr.ru/auth/login/">Войти</a></dd>
+		<dd><a href="https://habrahabr.ru/auth/register/">Регистрация</a></dd>
+	</dl>
+	<dl>
+		<dt>Разделы</dt>
+		<dd><a href="http://habrahabr.ru/posts/top/">Посты</a></dd>
+		<dd><a href="http://habrahabr.ru/hubs/">Хабы</a></dd>
+		<dd><a href="http://habrahabr.ru/companies/">Компании</a></dd>
+		<dd><a href="http://habrahabr.ru/users/">Пользователи</a></dd>
+		<dd><a href="http://toster.ru/?_aa=press_anykey">Q&amp;A</a></dd>
+		<dd><a href="http://habrahabr.ru/sandbox/">Песочница</a></dd>
+		
+	</dl>	
+	<dl>
+		<dt>Инфо</dt>
+		<dd><a href="/info/about/">О сайте</a></dd>
+		<dd><a href="/info/help/rules/">Правила</a></dd>
+		<dd><a href="/info/help/">Помощь</a></dd>
+		<dd><a href="/info/agreement/">Соглашение</a></dd>
+	</dl>
+	<dl>
+		<dt>Услуги</dt>
+		<dd><a href="/info/advertising/">Реклама</a></dd>
+		<dd><a href="/info/advertising/corporate/">Корпоративные тарифы</a></dd>
+		<dd><a href="/info/advertising/workshops/">Семинары</a></dd>
+		<dd><a href="/special/">Спецпроекты</a></dd>
+	</dl>
+	<dl>
+		<dt>Разное</dt>
+		<dd><a href="/apps/">Приложения</a></dd>
+		<dd><a href="/special/testdrive/">Тест-драйвы</a></dd>
+		<dd><a href="/info/hello_startup/">Помощь стартапам</a></dd>
+		<dd><a href="/special/minsvyaz/">Льготы стартапам</a></dd>
+	</dl>
+	<div class="copyright">
+
+		<div class="about">
+			<a href="http://tmtm.ru/">TM</a>
+			© 2006&#8211;2014
+			<br><br>
+			<a href="http://habrahabr.ru/feedback/">Служба поддержки</a><br><br>
+			    <a href="http://m.habrahabr.ru?mobile=yes">Мобильная версия</a><br><br>
+			
+
+			<div class="social_accounts">
+				<a href="https://twitter.com/habrahabr" class="tw"></a>
+				<a href="https://www.facebook.com/habrahabr.ru" class="fb"></a>
+				<a href="http://vk.com/habr" class="vk"></a>
+				<!-- <a href="" class="gp"></a> //-->
+			</div>
+
+		</div>
+	</div>
+
+</div>    
+          <div class="footer_logos">
+		
+		<div class="project brainstorage">
+			<a href="http://brainstorage.ru" class="icon "></a>
+			<div class="text">Все мозги в одном месте</div>
+		</div>
+
+		<div class="project toster">
+			<a href="http://toster.ru" class="icon "></a>
+			<div class="text">Q&A-сервис для разработчиков</div>
+		</div>
+		
+		<div class="project freelansim">
+			<a href="http://freelansim.ru" class="icon "></a>
+			<div class="text">Заказы для фрилансеров</div>
+		</div>
+		
+		<div class="project autokadabra">
+			<a href="http://autokadabra.ru" class="icon "></a>
+			<div class="text ">Уютная и дружелюбная</div>
+		</div>
+		
+</div>
+
+        </div>
+      </div>
+    </div>
+  
+
+      <script type="text/javascript" src="/javascripts/1402935303/libs/jquery.cookie.js"></script>
+      <script type="text/javascript">
+        $(document).ready( function(){
+          window.tmidLogin = function(){ return false; };
+          if( $.cookie('tmid_no_check') == undefined ) {
+            var expire = new Date();
+            expire.setMinutes(expire.getMinutes() + 10 );
+            $.cookie('tmid_no_check', 1, { expires: expire } );
+            $.getScript("https://id.tmtm.ru/checklogin", function(){
+              if( window.tmidLogin() ) {
+
+                  var href = $('#login').attr('href');
+
+                  if( href !== undefined ) {
+                      window.location.href = href;
+                  }
+              }
+            });
+          }
+        });
+      </script>
+
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $.jGrowl.defaults.closerTemplate = '<div>Закрыть все уведомления</div>';         
+        $(".help-tip").tipTip({maxWidth: "300px", edgeOffset: 10});  
+      });
+      // global vars
+      var g_base_url = 'habrahabr.ru';
+      var g_show_xpanel = false;
+      var g_base_fullurl = 'http://habrahabr.ru/';
+      var g_is_guest = false;
+    </script>
+    
+    <script type="text/javascript" src="/javascripts/1402935303/_parts/shortcuts.js"></script>
+    
+    
+    <script type="text/javascript" src="/javascripts/1402935303/_parts/float_block.js"></script>
+    
+    	<script type="text/javascript" src="http://habrahabr.ru/viewcount/post/203884/"></script>
+
+    
+
+  </body>
+</html>
