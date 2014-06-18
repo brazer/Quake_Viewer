@@ -23,5 +23,8 @@
     <string name="population">Population:</string>
     <string name="time_zone">Time Zone:</string>
     <string name="elevation">Elevation:</string>
+    <string name="url">http://www.brazer.url.ph/data.dbf</string>
+    <string name="internet_load">Загрузить из Интернета</string>
+    <string name="file_load">Загрузить из файла</string>
 
 </resources>

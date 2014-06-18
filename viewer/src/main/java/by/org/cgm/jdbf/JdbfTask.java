@@ -69,7 +69,8 @@ public class JdbfTask extends AsyncTask<String, String, Boolean>
 
     @Override
     protected Boolean doInBackground(String... params) {
-        initReader(params[0]);
+        if (params[0].contains("http")) readFromUrl(params[0]);
+        else readFromFile(params[0]);
         boolean res = false;
         try {
             res = formRecords();
@@ -81,23 +82,21 @@ public class JdbfTask extends AsyncTask<String, String, Boolean>
         return res;
     }
 
-    private void initReader(String strUrl) {
+    private void readFromUrl(String strUrl) {
         try {
             URL url = new URL(strUrl);
             reader = new DBFReader(url.openStream());
         }
         catch (Exception e) {
             e.printStackTrace();
-            reader = readFromFile();
         }
     }
 
-    private DBFReader readFromFile() {
+    private void readFromFile(String fileName) {
         try {
-            return new DBFReader("/mnt/sdcard/Download/data.dbf");
+            reader = new DBFReader(fileName);
         } catch (JDBFException e) {
             e.printStackTrace();
-            return null;
         }
     }
 

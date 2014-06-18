@@ -6,14 +6,14 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Загрузить из Интернета"
+        android:text="@string/internet_load"
         android:id="@+id/btn_internet"
         android:layout_gravity="center_horizontal" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Загрузить из файла"
+        android:text="@string/file_load"
         android:id="@+id/btn_local"
         android:layout_gravity="center_horizontal" />
 

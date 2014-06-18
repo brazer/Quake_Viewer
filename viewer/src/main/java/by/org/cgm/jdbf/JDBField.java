@@ -232,7 +232,7 @@ public class JDBField {
                     return new Long(s);
                 }
                 else {
-                    return new Double(s);
+                    return new Double(s.replace(',', '.'));
                 }
             }
             catch (NumberFormatException numberformatexception) {

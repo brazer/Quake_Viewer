@@ -35,7 +35,7 @@ public class StartDialog extends DialogFragment implements OpenFileDialog.OpenDi
         final View v = inflater.inflate(R.layout.dialog_start, null);
         builder.setView(v)
                 .setTitle("Загрузка данных")
-                .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (QuakeContent.ITEMS.size()==0) System.exit(0);
@@ -95,7 +95,7 @@ public class StartDialog extends DialogFragment implements OpenFileDialog.OpenDi
             final TextView textView = (TextView) v.findViewById(R.id.txtHttp);
             builder.setView(v)
                     .setTitle("Загрузка данных из интернета")
-                    .setPositiveButton("ОК", new DialogInterface.OnClickListener() {
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             String http = textView.getText().toString();
@@ -103,7 +103,7 @@ public class StartDialog extends DialogFragment implements OpenFileDialog.OpenDi
                             dismiss();
                         }
                     })
-                    .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dismiss();
