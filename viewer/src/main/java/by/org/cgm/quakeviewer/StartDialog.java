@@ -38,7 +38,7 @@ public class StartDialog extends DialogFragment implements OpenFileDialog.OpenDi
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (QuakeContent.ITEMS.size()==0) System.exit(0);
+                        if (QuakeContent.QUAKES.size()==0) System.exit(0);
                         else dismiss();
                     }
                 });

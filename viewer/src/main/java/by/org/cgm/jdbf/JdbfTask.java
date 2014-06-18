@@ -69,7 +69,7 @@ public class JdbfTask extends AsyncTask<String, String, Boolean>
 
     @Override
     protected Boolean doInBackground(String... params) {
-        if (params[0].contains("http")) readFromUrl(params[0]);
+        if (params[0].contains("http:")) readFromUrl(params[0]);
         else readFromFile(params[0]);
         boolean res = false;
         try {
@@ -117,7 +117,6 @@ public class JdbfTask extends AsyncTask<String, String, Boolean>
         if (mProgressTracker!=null)
             mProgressTracker.onComplete();
         mProgressTracker = null;
-        //QuakeListActivity.progress.dismiss();
     }
 
     private boolean formRecords() throws JDBFException, UnsupportedEncodingException {

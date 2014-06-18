@@ -135,13 +135,13 @@ public class QuakeListActivity extends ListActivity implements OnTaskCompleteLis
         }
 
         if (!QuakeContent.init()) return;
-        mQuakeAdapter = new QuakeAdapter(this, QuakeContent.ITEMS);
+        mQuakeAdapter = new QuakeAdapter(this, QuakeContent.QUAKES);
         setListAdapter(mQuakeAdapter);
 
         findViewById(R.id.btn_all).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showQuakes(QuakeContent.ITEMS);
+                showQuakes(QuakeContent.QUAKES);
             }
         });
     }
