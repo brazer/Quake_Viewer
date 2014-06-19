@@ -56,7 +56,7 @@ public class LoadDialog extends DialogFragment implements OpenFileDialog.OpenDia
             @Override
             public void onClick(View v) {
                 QuakeListActivity.isLoaded = true;
-                createInternetDialog();
+                showInternetDialog();
                 dismiss();
             }
         });
@@ -82,10 +82,9 @@ public class LoadDialog extends DialogFragment implements OpenFileDialog.OpenDia
         }
     }
 
-    private void createInternetDialog() {
-        InternetDialog internetDialog = new InternetDialog(context, listener);
+    private void showInternetDialog() {
         QuakeListActivity.isLoadedInternetDialog = false;
-        internetDialog.show(getFragmentManager(), null);
+        QuakeListActivity.internetDialog.show(getFragmentManager(), null);
     }
 
 }

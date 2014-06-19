@@ -29,7 +29,7 @@ public class QuakeListActivity extends ListActivity implements OnTaskCompleteLis
     private QuakeAdapter mQuakeAdapter;
     public static boolean isLoaded = false;
     public static boolean isLoadedInternetDialog = true;
-    private InternetDialog internetDialog;
+    public static InternetDialog internetDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
