@@ -27,19 +27,27 @@ import by.org.cgm.quakeviewer.quake.QuakeContent.QuakeItem;
 public class QuakeListActivity extends ListActivity implements OnTaskCompleteListener {
 
     private QuakeAdapter mQuakeAdapter;
+    public static boolean isLoaded = false;
+    public static boolean isLoadedInternetDialog = true;
+    private InternetDialog internetDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quake_list);
 
-        boolean isLoaded = false;
-        if (savedInstanceState!=null) isLoaded = savedInstanceState.getBoolean("isLoaded");
-        if (!isLoaded) createStartDialog();
-        else {
+        if (savedInstanceState!=null) {
+            isLoaded = savedInstanceState.getBoolean("isLoaded");
+            isLoadedInternetDialog = savedInstanceState.getBoolean("isInternet");
             mQuakeAdapter = (QuakeAdapter) savedInstanceState.getSerializable("adapter");
             setListAdapter(mQuakeAdapter);
             setShowAllListener();
+        }
+        if (!isLoaded) createLoadDialog();
+        internetDialog = new InternetDialog(this, this);
+        if (!isLoadedInternetDialog) {
+            String url = savedInstanceState.getString("url");
+            showInternetDialog(url);
         }
     }
 
@@ -51,62 +59,30 @@ public class QuakeListActivity extends ListActivity implements OnTaskCompleteLis
             }
         };
         findViewById(R.id.btn_all).setOnClickListener(listener);
+        if (QuakeContent.QUAKES.size()>0)
+            findViewById(R.id.btn_all).setEnabled(true);
+        else findViewById(R.id.btn_all).setEnabled(false);
     }
 
-    private void createStartDialog() {
-        StartDialog start = new StartDialog();
+    private void createLoadDialog() {
+        LoadDialog start = new LoadDialog();
         start.setContext(this);
         start.setListener(this);
         start.show(getFragmentManager(), null);
     }
 
-    /**
-     * Called to retrieve per-instance state from an activity before being killed
-     * so that the state can be restored in {@link #onCreate} or
-     * {@link #onRestoreInstanceState} (the {@link android.os.Bundle} populated by this method
-     * will be passed to both).
-     * <p/>
-     * <p>This method is called before an activity may be killed so that when it
-     * comes back some time in the future it can restore its state.  For example,
-     * if activity B is launched in front of activity A, and at some point activity
-     * A is killed to reclaim resources, activity A will have a chance to save the
-     * current state of its user interface via this method so that when the user
-     * returns to activity A, the state of the user interface can be restored
-     * via {@link #onCreate} or {@link #onRestoreInstanceState}.
-     * <p/>
-     * <p>Do not confuse this method with activity lifecycle callbacks such as
-     * {@link #onPause}, which is always called when an activity is being placed
-     * in the background or on its way to destruction, or {@link #onStop} which
-     * is called before destruction.  One example of when {@link #onPause} and
-     * {@link #onStop} is called and not this method is when a user navigates back
-     * from activity B to activity A: there is no need to call {@link #onSaveInstanceState}
-     * on B because that particular instance will never be restored, so the
-     * system avoids calling it.  An example when {@link #onPause} is called and
-     * not {@link #onSaveInstanceState} is when activity B is launched in front of activity A:
-     * the system may avoid calling {@link #onSaveInstanceState} on activity A if it isn't
-     * killed during the lifetime of B since the state of the user interface of
-     * A will stay intact.
-     * <p/>
-     * <p>The default implementation takes care of most of the UI per-instance
-     * state for you by calling {@link android.view.View#onSaveInstanceState()} on each
-     * view in the hierarchy that has an id, and by saving the id of the currently
-     * focused view (all of which is restored by the default implementation of
-     * {@link #onRestoreInstanceState}).  If you override this method to save additional
-     * information not captured by each individual view, you will likely want to
-     * call through to the default implementation, otherwise be prepared to save
-     * all of the state of each view yourself.
-     * <p/>
-     * <p>If called, this method will occur before {@link #onStop}.  There are
-     * no guarantees about whether it will occur before or after {@link #onPause}.
-     *
-     * @param outState Bundle in which to place your saved state.
-     * @see #onCreate
-     * @see #onRestoreInstanceState
-     * @see #onPause
-     */
+    private void showInternetDialog(String url) {
+        internetDialog.setText(url);
+        isLoadedInternetDialog = false;
+        internetDialog.show(getFragmentManager(), null);
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean("isLoaded", true);
+        outState.putBoolean("isLoaded", isLoaded);
+        outState.putBoolean("isInternet", isLoadedInternetDialog);
+        String url = internetDialog.getText();
+        outState.putCharSequence("url", url);
         outState.putSerializable("adapter", mQuakeAdapter);
     }
 
@@ -202,7 +178,10 @@ public class QuakeListActivity extends ListActivity implements OnTaskCompleteLis
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id==R.id.load) createStartDialog();
+        if (id==R.id.load) {
+            isLoaded = false;
+            createLoadDialog();
+        }
         if (id==R.id.exit) System.exit(0);
         return super.onOptionsItemSelected(item);
     }

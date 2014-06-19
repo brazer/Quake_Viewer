@@ -26,13 +26,14 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class OpenFileDialog extends AlertDialog.Builder {
+public class OpenFileDialog extends AlertDialog.Builder implements Serializable {
 
     private String currentPath = Environment.getExternalStorageDirectory().getPath();
     private FilenameFilter filenameFilter;
@@ -49,7 +50,7 @@ public class OpenFileDialog extends AlertDialog.Builder {
         public void OnSelectedFile(String fileName);
     }
 
-    private class FileAdapter extends ArrayAdapter<File> {
+    private class FileAdapter extends ArrayAdapter<File> implements Serializable {
 
         /**
          * Constructor
