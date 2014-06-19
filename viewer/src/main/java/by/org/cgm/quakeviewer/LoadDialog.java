@@ -9,22 +9,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
-import by.org.cgm.jdbf.JdbfTask;
 import by.org.cgm.quakeviewer.quake.QuakeContent;
 
-public class LoadDialog extends DialogFragment implements OpenFileDialog.OpenDialogListener {
+public class LoadDialog extends DialogFragment {
 
     private Context context;
-    private static OnTaskCompleteListener listener;
 
     public void setContext(Context c) {
         context = c;
-    }
-
-    public void setListener(OnTaskCompleteListener l) {
-        listener = l;
     }
 
     @Override
@@ -47,7 +40,7 @@ public class LoadDialog extends DialogFragment implements OpenFileDialog.OpenDia
             @Override
             public void onClick(View v) {
                 QuakeListActivity.isLoaded = true;
-                createOpenFileDialog();
+                showOpenFileDialog();
                 dismiss();
             }
         });
@@ -63,22 +56,16 @@ public class LoadDialog extends DialogFragment implements OpenFileDialog.OpenDia
         return builder.create();
     }
 
-    private void createOpenFileDialog() {
-        OpenFileDialog dialog = new OpenFileDialog(context);
-        dialog.setOpenDialogListener(this);
-        dialog.setFolderIcon(context.getResources().getDrawable(R.drawable.abc_ic_go));
-        dialog.show();
-    }
+    private void showOpenFileDialog() {
+        try {
+            QuakeListActivity.fileDialog = new OpenFileDialog(context);
+            QuakeListActivity.fileDialog.setFolderIcon(getResources().getDrawable(R.drawable.abc_ic_go));
+            QuakeListActivity.fileDialog.setOpenDialogListener(QuakeListActivity.listener);
+            QuakeListActivity.isLoadedFileDialog = false;
+            QuakeListActivity.fileDialog.show();
+        } catch(IllegalStateException e) {
+            e.printStackTrace();
 
-    @Override
-    public void OnSelectedFile(String fileName) {
-        if (!fileName.contains("dbf")) {
-            Toast.makeText(context, "Выберите dbf-файл", Toast.LENGTH_SHORT).show();
-            createOpenFileDialog();
-        }
-        else {
-            AsyncTaskManager mAsyncTaskManager = new AsyncTaskManager(context, listener);
-            mAsyncTaskManager.setupTask(new JdbfTask(context.getResources()), fileName);
         }
     }
 

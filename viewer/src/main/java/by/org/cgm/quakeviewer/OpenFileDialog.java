@@ -26,14 +26,13 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class OpenFileDialog extends AlertDialog.Builder implements Serializable {
+public class OpenFileDialog extends AlertDialog.Builder {
 
     private String currentPath = Environment.getExternalStorageDirectory().getPath();
     private FilenameFilter filenameFilter;
@@ -50,7 +49,7 @@ public class OpenFileDialog extends AlertDialog.Builder implements Serializable 
         public void OnSelectedFile(String fileName);
     }
 
-    private class FileAdapter extends ArrayAdapter<File> implements Serializable {
+    private class FileAdapter extends ArrayAdapter<File> {
 
         /**
          * Constructor
@@ -122,9 +121,23 @@ public class OpenFileDialog extends AlertDialog.Builder implements Serializable 
                         if (selectedIndex > -1 && listener != null) {
                             listener.OnSelectedFile(listView.getItemAtPosition(selectedIndex).toString());
                         }
+                        QuakeListActivity.isLoadedFileDialog = true;
                     }
                 })
-                .setNegativeButton(android.R.string.cancel, null);
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        QuakeListActivity.isLoadedFileDialog = true;
+                    }
+                });
+    }
+
+    public void setCurrentPath(String path) {
+        currentPath = path;
+    }
+
+    public String getCurrentPath() {
+        return currentPath;
     }
 
     private ListView createListView(Context context) {

@@ -24,12 +24,22 @@ import by.org.cgm.jdbf.JdbfTask;
 import by.org.cgm.quakeviewer.quake.QuakeContent;
 import by.org.cgm.quakeviewer.quake.QuakeContent.QuakeItem;
 
-public class QuakeListActivity extends ListActivity implements OnTaskCompleteListener {
+public class QuakeListActivity extends ListActivity
+        implements OnTaskCompleteListener, OpenFileDialog.OpenDialogListener {
 
     private QuakeAdapter mQuakeAdapter;
-    public static boolean isLoaded = false;
-    public static boolean isLoadedInternetDialog = true;
+    public static boolean isLoaded;
+    public static boolean isLoadedInternetDialog;
     public static InternetDialog internetDialog;
+    public static boolean isLoadedFileDialog;
+    public static OpenFileDialog fileDialog;
+    public static OpenFileDialog.OpenDialogListener listener;
+
+    {
+        isLoaded = false;
+        isLoadedInternetDialog = true;
+        isLoadedFileDialog = true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,15 +49,24 @@ public class QuakeListActivity extends ListActivity implements OnTaskCompleteLis
         if (savedInstanceState!=null) {
             isLoaded = savedInstanceState.getBoolean("isLoaded");
             isLoadedInternetDialog = savedInstanceState.getBoolean("isInternet");
+            isLoadedFileDialog = savedInstanceState.getBoolean("isLocal");
             mQuakeAdapter = (QuakeAdapter) savedInstanceState.getSerializable("adapter");
             setListAdapter(mQuakeAdapter);
             setShowAllListener();
         }
         if (!isLoaded) createLoadDialog();
         internetDialog = new InternetDialog(this, this);
-        if (!isLoadedInternetDialog) {
+        if (!isLoadedInternetDialog & savedInstanceState!=null) {
             String url = savedInstanceState.getString("url");
             showInternetDialog(url);
+        }
+        fileDialog = new OpenFileDialog(this);
+        fileDialog.setFolderIcon(getResources().getDrawable(R.drawable.abc_ic_go));
+        listener = this;
+        fileDialog.setOpenDialogListener(listener);
+        if (!isLoadedFileDialog & savedInstanceState!=null) {
+            String path = savedInstanceState.getString("path");
+            showOpenFileDialog(path);
         }
     }
 
@@ -67,7 +86,6 @@ public class QuakeListActivity extends ListActivity implements OnTaskCompleteLis
     private void createLoadDialog() {
         LoadDialog start = new LoadDialog();
         start.setContext(this);
-        start.setListener(this);
         start.show(getFragmentManager(), null);
     }
 
@@ -77,12 +95,21 @@ public class QuakeListActivity extends ListActivity implements OnTaskCompleteLis
         internetDialog.show(getFragmentManager(), null);
     }
 
+    private void showOpenFileDialog(String path) {
+        isLoadedFileDialog = false;
+        fileDialog.setCurrentPath(path);
+        fileDialog.show();
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putBoolean("isLoaded", isLoaded);
         outState.putBoolean("isInternet", isLoadedInternetDialog);
         String url = internetDialog.getUrl();
         outState.putCharSequence("url", url);
+        outState.putBoolean("isLocal", isLoadedFileDialog);
+        String path = fileDialog.getCurrentPath();
+        outState.putCharSequence("path", path);
         outState.putSerializable("adapter", mQuakeAdapter);
     }
 
@@ -127,54 +154,12 @@ public class QuakeListActivity extends ListActivity implements OnTaskCompleteLis
         setShowAllListener();
     }
 
-    /**
-     * Initialize the contents of the Activity's standard options menu.  You
-     * should place your menu items in to <var>menu</var>.
-     * <p/>
-     * <p>This is only called once, the first time the options menu is
-     * displayed.  To update the menu every time it is displayed, see
-     * {@link #onPrepareOptionsMenu}.
-     * <p/>
-     * <p>The default implementation populates the menu with standard system
-     * menu items.  These are placed in the {@link android.view.Menu#CATEGORY_SYSTEM} group so that
-     * they will be correctly ordered with application-defined menu items.
-     * Deriving classes should always call through to the base implementation.
-     * <p/>
-     * <p>You can safely hold on to <var>menu</var> (and any items created
-     * from it), making modifications to it as desired, until the next
-     * time onCreateOptionsMenu() is called.
-     * <p/>
-     * <p>When you add items to the menu, you can implement the Activity's
-     * {@link #onOptionsItemSelected} method to handle them there.
-     *
-     * @param menu The options menu in which you place your items.
-     * @return You must return true for the menu to be displayed;
-     * if you return false it will not be shown.
-     * @see #onPrepareOptionsMenu
-     * @see #onOptionsItemSelected
-     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
-    /**
-     * This hook is called whenever an item in your options menu is selected.
-     * The default implementation simply returns false to have the normal
-     * processing happen (calling the item's Runnable or sending a message to
-     * its Handler as appropriate).  You can use this method for any items
-     * for which you would like to do processing without those other
-     * facilities.
-     * <p/>
-     * <p>Derived classes should call through to the base class for it to
-     * perform the default menu handling.</p>
-     *
-     * @param item The menu item that was selected.
-     * @return boolean Return false to allow normal menu processing to
-     * proceed, true to consume it here.
-     * @see #onCreateOptionsMenu
-     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -184,6 +169,18 @@ public class QuakeListActivity extends ListActivity implements OnTaskCompleteLis
         }
         if (id==R.id.exit) System.exit(0);
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void OnSelectedFile(String fileName) {
+        if (!fileName.contains("dbf")) {
+            Toast.makeText(this, "Выберите dbf-файл", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            AsyncTaskManager mAsyncTaskManager = new AsyncTaskManager(this, this);
+            mAsyncTaskManager.setupTask(new JdbfTask(getResources()), fileName);
+            isLoadedFileDialog = true;
+        }
     }
 
     private static class QuakeAdapter extends ArrayAdapter<QuakeItem> implements Serializable {
