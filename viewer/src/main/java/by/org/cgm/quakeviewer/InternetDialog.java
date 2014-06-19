@@ -25,12 +25,12 @@ public class InternetDialog extends DialogFragment {
         this.listener = listener;
     }
 
-    public String getText() {
-        http = text.getText().toString();
+    public String getUrl() {
+        if (text!=null) http = text.getText().toString();
         return http;
     }
 
-    public void setText(String url) {
+    public void setUrl(String url) {
         http = url;
     }
 

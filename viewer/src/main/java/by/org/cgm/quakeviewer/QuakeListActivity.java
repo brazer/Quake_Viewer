@@ -72,7 +72,7 @@ public class QuakeListActivity extends ListActivity implements OnTaskCompleteLis
     }
 
     private void showInternetDialog(String url) {
-        internetDialog.setText(url);
+        internetDialog.setUrl(url);
         isLoadedInternetDialog = false;
         internetDialog.show(getFragmentManager(), null);
     }
@@ -81,7 +81,7 @@ public class QuakeListActivity extends ListActivity implements OnTaskCompleteLis
     protected void onSaveInstanceState(Bundle outState) {
         outState.putBoolean("isLoaded", isLoaded);
         outState.putBoolean("isInternet", isLoadedInternetDialog);
-        String url = internetDialog.getText();
+        String url = internetDialog.getUrl();
         outState.putCharSequence("url", url);
         outState.putSerializable("adapter", mQuakeAdapter);
     }
