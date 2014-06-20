@@ -5,18 +5,26 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
-import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+
+import com.mapswithme.maps.api.MWMPoint;
+import com.mapswithme.maps.api.MWMResponse;
+import com.mapswithme.maps.api.MapsWithMeApi;
+
+import by.org.cgm.quakeviewer.quake.QuakeContent;
 
 public class QuakeDetailActivity extends Activity {
 
     public static String EXTRA_FROM_MWM = "from-maps-with-me";
+    private TextView mNumber, mContent, mLon, mLat, mLocation;
+    private QuakeContent.QuakeItem mQuake;
 
     public static PendingIntent getPendingIntent(Context context)
     {
-        final Intent i = new Intent(context, QuakeDetailActivity.class);
-        i.putExtra(EXTRA_FROM_MWM, true);
-        return PendingIntent.getActivity(context, 0, i, 0);
+        final Intent intent = new Intent(context, QuakeDetailActivity.class);
+        intent.putExtra(EXTRA_FROM_MWM, true);
+        return PendingIntent.getActivity(context, 0, intent, 0);
     }
 
     @Override
@@ -24,28 +32,43 @@ public class QuakeDetailActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quake_detail);
 
-        if (savedInstanceState == null) {
-            // Create the detail fragment and add it to the activity
-            // using a fragment transaction.
-            Bundle arguments = new Bundle();
+        mNumber = (TextView) findViewById(R.id.number);
+        mContent = (TextView) findViewById(R.id.description);
+        mLon = (TextView) findViewById(R.id.lon);
+        mLat = (TextView) findViewById(R.id.lat);
+        mLocation = (TextView) findViewById(R.id.location);
 
-        }
+        findViewById(R.id.showOnMap).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MapsWithMeApi
+                        .showPointOnMap(QuakeDetailActivity.this,
+                                mQuake.lat, mQuake.lon, mQuake.content);
+            }
+        });
+
+        handleIntent(getIntent());
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. Use NavUtils to allow users
-            // to navigate up one level in the application structure. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
-            NavUtils.navigateUpTo(this, new Intent(this, QuakeListActivity.class));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
     }
+
+    private void handleIntent(Intent intent) {
+        if (intent.getBooleanExtra(EXTRA_FROM_MWM, false)) {
+            final MWMResponse response = MWMResponse.extractFromIntent(this, intent);
+            MWMPoint point = response.getPoint();
+            mQuake = QuakeContent.getItemFromPoint(point);
+            if (mQuake!=null) {
+                mNumber.setText(mQuake.id);
+                mLat.setText(String.valueOf(mQuake.lat));
+                mLon.setText(String.valueOf(mQuake.lon));
+                mContent.setText(mQuake.content);
+                mLocation.setText(mQuake.location);
+            }
+        }
+    }
+
 }

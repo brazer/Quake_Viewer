@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Quake Viewer</string>
-    <string name="title_quake_detail">Quake Detail</string>
+    <string name="title_quake_detail">Подробное описание</string>
 
     <string name="run_task">Запуск</string>
     <string name="task_working">Загрузка (%1$d)...</string>
@@ -10,21 +10,18 @@
     <string name="task_cancelled">Загрузка отменена пользователем</string>
     <string name="task_completed">Данные загружены с результатом (%1$s)</string>
 
+    <string name="internet_load">Загрузить из Интернета</string>
+    <string name="file_load">Загрузить из файла</string>
+    <string name="url">http://www.brazer.url.ph/data.dbf</string>
     <string name="load_data">Загрузка данных</string>
     <string name="exit">Выход</string>
 
     <string name="show_all">Показать всё</string>
-    <string name="open_with_mapswithme">Open With MapsWithMe</string>
-    <string name="name">Name:</string>
-    <string name="alternative_names">Alternative names:</string>
-    <string name="lat">Lat:</string>
-    <string name="lon">Lon:</string>
-    <string name="country">Country:</string>
-    <string name="population">Population:</string>
-    <string name="time_zone">Time Zone:</string>
-    <string name="elevation">Elevation:</string>
-    <string name="url">http://www.brazer.url.ph/data.dbf</string>
-    <string name="internet_load">Загрузить из Интернета</string>
-    <string name="file_load">Загрузить из файла</string>
+    <string name="open_with_mapswithme">Открыть в MapsWithMe</string>
+    <string name="lat">Широта:</string>
+    <string name="lon">Долгота:</string>
+    <string name="number">Номер:</string>
+    <string name="description">Описание:</string>
+    <string name="location">Местоположение:</string>
 
 </resources>
