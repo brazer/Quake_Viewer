@@ -153,7 +153,7 @@ public class DBFReader
 
         //获取字段名
         StringBuffer stringbuffer = new StringBuffer(10);
-        int i = 0;
+        int i;
         for (i = 0; i < 10; i++) {
             if (abyte0[i] == 0)
                 break;

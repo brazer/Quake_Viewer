@@ -45,6 +45,7 @@ public class AsyncTaskManager implements IProgressTracker, DialogInterface.OnCan
         mAsyncTask.cancel(true);
         mTaskCompleteListener.onTaskComplete(mAsyncTask);
         mAsyncTask = null;
+        dialog.dismiss();
     }
 
     @Override

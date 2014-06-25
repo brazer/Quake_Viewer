@@ -126,7 +126,7 @@ public class QuakeListActivity extends ListActivity
         for (int i = 0; i < quakes.size(); i++)
             points[i] = quakes.get(i).toMWMPoint();
 
-        final String title = quakes.size() == 1 ? quakes.get(0).location : "Землетрясения";
+        final String title = (quakes.size()==1) ? quakes.get(0).title : "Землетрясения";
         MapsWithMeApi.showPointsOnMap(this, title, QuakeDetailActivity.getPendingIntent(this), points);
     }
 
@@ -167,7 +167,7 @@ public class QuakeListActivity extends ListActivity
             isLoaded = false;
             createLoadDialog();
         }
-        if (id==R.id.exit) System.exit(0);
+        if (id==R.id.exit) onBackPressed();
         return super.onOptionsItemSelected(item);
     }
 

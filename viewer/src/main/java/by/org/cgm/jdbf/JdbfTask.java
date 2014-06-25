@@ -143,7 +143,7 @@ public class JdbfTask extends AsyncTask<String, String, Boolean>
         while (reader.hasNextRecord()) {
             if (isCancelled()) return false;
             String strings[] = reader.nextRecordStrings();
-            QuakeRecord rec = new QuakeRecord();
+            QuakeRecord rec = initQuakeRecord(strings[1]);
             for (int j=0; j<strings.length; j++) {
                 rec.setField(j, strings[j]);
                 System.out.print(strings[j]+" ");
@@ -155,9 +155,23 @@ public class JdbfTask extends AsyncTask<String, String, Boolean>
         return true;
     }
 
-    public static class QuakeRecord
+    private QuakeRecord initQuakeRecord(String str) {
+        if (isEarth(str)) return new QuakeRecordEarth();
+        else return new QuakeRecordBLR();
+    }
+
+    private boolean isEarth(String s) {
+        return s.contains(":");
+    }
+
+    public abstract static class QuakeRecord {
+        protected abstract void setField(int nField, String value);
+    }
+
+    public static class QuakeRecordEarth extends QuakeRecord
     {
         public String N, DateTime, Lon, Lat, Depth, MPSP, MPLP, MS, LocRus, Loc;
+
         public void setField(int nField, String value) {
             switch (nField) {
                 case 0:
@@ -189,6 +203,44 @@ public class JdbfTask extends AsyncTask<String, String, Boolean>
                     break;
                 case 9:
                     LocRus = value;
+            }
+        }
+    }
+
+    public static class QuakeRecordBLR extends QuakeRecord
+    {
+        public String N, Date, Time, Lat, Lon, Ts_p, Delta, Kp, M, Loc;
+        public void setField(int nField, String value) {
+            switch (nField) {
+                case 0:
+                    N = value;
+                    break;
+                case 1:
+                    Date = value;
+                    break;
+                case 2:
+                    Time = value;
+                    break;
+                case 3:
+                    Lon = value;
+                    break;
+                case 4:
+                    Lat = value;
+                    break;
+                case 5:
+                    Ts_p = value;
+                    break;
+                case 6:
+                    Delta = value;
+                    break;
+                case 7:
+                    Kp = value;
+                    break;
+                case 8:
+                    M = value;
+                    break;
+                case 9:
+                    Loc = value;
             }
         }
     }

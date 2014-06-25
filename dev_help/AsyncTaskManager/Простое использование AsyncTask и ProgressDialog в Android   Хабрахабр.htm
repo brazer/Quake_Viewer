@@ -81,7 +81,7 @@
     return'';
   }
   var crtg_content = crtg_getCookie(crtg_cookiename);var crtg_rnd=Math.floor(Math.random()*99999999999);
-  var crtg_url=location.protocol+'//rtax.criteo.com/delivery/rta/rta.js?netId='+escape(crtg_nid);crtg_url+='&cookieName='+escape(crtg_cookiename);crtg_url+='&rnd='+crtg_rnd;crtg_url+='&varName=' + escape(crtg_varname);
+  var crtg_url=title.protocol+'//rtax.criteo.com/delivery/rta/rta.js?netId='+escape(crtg_nid);crtg_url+='&cookieName='+escape(crtg_cookiename);crtg_url+='&rnd='+crtg_rnd;crtg_url+='&varName=' + escape(crtg_varname);
   var crtg_script=document.createElement('script');crtg_script.type='text/javascript';crtg_script.src=crtg_url;crtg_script.async=true;
   if(document.getElementsByTagName("head").length>0)document.getElementsByTagName("head")[0].appendChild(crtg_script);
   else
@@ -151,7 +151,7 @@ var pp_gemius_identifier = new String('p8zr4.NqiIZJgD2cnP2s5fWWnIQFHrAvZ280B955g
         f = function () { n.parentNode.insertBefore(s, n); };
     s.type = "text/javascript";
     s.async = true;
-    s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";
+    s.src = (d.title.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";
 
     if (w.opera == "[object Opera]") {
         d.addEventListener("DOMContentLoaded", f, false);
@@ -1172,7 +1172,7 @@ AsyncTaskManager выполняет роль своеобразного ключ
 
   <script>
     // hubs to GA
-      ga('send', 'event', 'Post_view', 'android_dev (Разработка под Android)',  window.location.pathname + window.location.search);
+      ga('send', 'event', 'Post_view', 'android_dev (Разработка под Android)',  window.title.pathname + window.title.search);
   </script>
 
 
@@ -1295,7 +1295,7 @@ AsyncTaskManager выполняет роль своеобразного ключ
                   var href = $('#login').attr('href');
 
                   if( href !== undefined ) {
-                      window.location.href = href;
+                      window.title.href = href;
                   }
               }
             });

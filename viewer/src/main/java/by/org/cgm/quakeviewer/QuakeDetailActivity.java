@@ -66,7 +66,7 @@ public class QuakeDetailActivity extends Activity {
                 mLat.setText(String.valueOf(mQuake.lat));
                 mLon.setText(String.valueOf(mQuake.lon));
                 mContent.setText(mQuake.content);
-                mLocation.setText(mQuake.location);
+                mLocation.setText((mQuake.title.matches("\\d{1,5}")) ? "нет информации" : mQuake.title);
             }
         }
     }
