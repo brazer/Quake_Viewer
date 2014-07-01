@@ -171,7 +171,6 @@ public class JdbfTask extends AsyncTask<String, String, Boolean>
     public static class QuakeRecordEarth extends QuakeRecord
     {
         public String N, DateTime, Lon, Lat, Depth, MPSP, MPLP, MS, LocRus, Loc;
-
         public void setField(int nField, String value) {
             switch (nField) {
                 case 0:
